@@ -51,7 +51,7 @@ namespace css.core
             {
                 Vector3 position = settlementPosition + new Vector3(
                     Random.Range(-5f, 5f),
-                    0,
+                    0.5f,
                     Random.Range(-5f, 5f)
                 );
 
