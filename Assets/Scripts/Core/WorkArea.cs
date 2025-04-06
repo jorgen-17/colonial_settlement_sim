@@ -9,6 +9,9 @@ namespace css.core
         public string areaName;
         public WorkAreaType areaType;
         public Settlement parentSettlement;
+        public string outputResource;
+        public float outputAmount;
+        public float capacity;
         
         [Header("Functionality")]
         public bool isOperational = true;
@@ -42,60 +45,83 @@ namespace css.core
             }
             
             // Set up work area-specific initialization
-            SetupWorkAreaType();
+            InitializeWorkAreaType();
         }
         
-        private void SetupWorkAreaType()
+        public void InitializeWorkAreaType()
         {
             switch (areaType)
             {
+                case WorkAreaType.HuntingGround:
+                    maxWorkers = 2;
+                    isIndoor = false;
+                    requiresTools = true;
+                    processingTime = 2.0f;
+                    outputResource = "meat";
+                    outputAmount = 5f;
+                    requiredTools.Add(new ResourceType("Hunting Tools", "Tools for hunting"));
+                    break;
+                    
+                case WorkAreaType.ButcheringStation:
+                    maxWorkers = 2;
+                    isIndoor = true;
+                    requiresTools = true;
+                    processingTime = 1.5f;
+                    outputResource = "processed_meat";
+                    outputAmount = 3f;
+                    requiredTools.Add(new ResourceType("Butchering Tools", "Tools for butchering"));
+                    break;
+                    
+                case WorkAreaType.TanningStation:
+                    maxWorkers = 2;
+                    isIndoor = true;
+                    requiresTools = true;
+                    processingTime = 2.0f;
+                    outputResource = "leather";
+                    outputAmount = 2f;
+                    requiredTools.Add(new ResourceType("Tanning Tools", "Tools for tanning"));
+                    break;
+                    
+                case WorkAreaType.Market:
+                    maxWorkers = 2;
+                    isIndoor = true;
+                    processingTime = 1.0f;
+                    break;
+                    
+                case WorkAreaType.Farm:
+                    maxWorkers = 4;
+                    isIndoor = false;
+                    requiresTools = true;
+                    processingTime = 3.0f;
+                    outputResource = "crops";
+                    outputAmount = 10f;
+                    requiredTools.Add(new ResourceType("Farming Tools", "Tools for farming"));
+                    break;
+                    
+                case WorkAreaType.Warehouse:
+                    maxWorkers = 2;
+                    isIndoor = true;
+                    processingTime = 0.5f;
+                    capacity = 1000f;
+                    break;
+                    
                 case WorkAreaType.House:
                     maxWorkers = 0;
                     isIndoor = true;
                     break;
-                case WorkAreaType.Market:
-                    maxWorkers = 2;
-                    isIndoor = true;
-                    break;
+                    
                 case WorkAreaType.Workshop:
                     maxWorkers = 3;
                     isIndoor = true;
                     requiresTools = true;
                     requiredTools.Add(new ResourceType("Tools", "Basic tools for crafting"));
                     break;
-                case WorkAreaType.Warehouse:
-                    maxWorkers = 2;
-                    isIndoor = true;
-                    break;
-                case WorkAreaType.Farm:
-                    maxWorkers = 4;
-                    isIndoor = false;
-                    requiresTools = true;
-                    requiredTools.Add(new ResourceType("Farming Tools", "Tools for farming"));
-                    break;
+                    
                 case WorkAreaType.Mine:
                     maxWorkers = 3;
                     isIndoor = false;
                     requiresTools = true;
                     requiredTools.Add(new ResourceType("Mining Tools", "Tools for mining"));
-                    break;
-                case WorkAreaType.HuntingGround:
-                    maxWorkers = 2;
-                    isIndoor = false;
-                    requiresTools = true;
-                    requiredTools.Add(new ResourceType("Hunting Tools", "Tools for hunting"));
-                    break;
-                case WorkAreaType.ButcheringStation:
-                    maxWorkers = 2;
-                    isIndoor = true;
-                    requiresTools = true;
-                    requiredTools.Add(new ResourceType("Butchering Tools", "Tools for butchering"));
-                    break;
-                case WorkAreaType.TanningStation:
-                    maxWorkers = 2;
-                    isIndoor = true;
-                    requiresTools = true;
-                    requiredTools.Add(new ResourceType("Tanning Tools", "Tools for tanning"));
                     break;
             }
         }

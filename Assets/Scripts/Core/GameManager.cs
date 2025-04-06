@@ -11,6 +11,9 @@ namespace css.core
         public float gameTimeScale = 1f;
         public float dayLength = 1200f; // 20 minutes per day at normal time scale
         
+        [Header("Prefabs")]
+        public GameObject workAreaPrefab;
+        
         [Header("Resource Types")]
         public List<ResourceType> resourceTypes = new List<ResourceType>();
         
@@ -20,10 +23,15 @@ namespace css.core
         [Header("NPCs")]
         public List<NPC> npcs = new List<NPC>();
         
+        [Header("Player Reference")]
+        public GameObject playerCharacter;
+        
         private float currentGameTime = 0f;
-        private int currentDay = 0;
+        public int currentDay = 0;
         
         public float CurrentGameTime => currentGameTime;
+        public int CurrentHour => (int)((currentGameTime / dayLength) * 24f);
+        public int CurrentMinute => (int)(((currentGameTime / dayLength) * 24f - CurrentHour) * 60f);
         
         private void Awake()
         {
@@ -69,17 +77,15 @@ namespace css.core
             resourceTypes.Add(new ResourceType("Stone", "Raw stone from quarries"));
             resourceTypes.Add(new ResourceType("Iron Ore", "Raw iron ore from mines"));
             resourceTypes.Add(new ResourceType("Coal", "Raw coal from mines"));
+            resourceTypes.Add(new ResourceType("Processed Meat", "Processed meat from butchering"));
+            resourceTypes.Add(new ResourceType("Leather", "Processed leather from tanning"));
+            resourceTypes.Add(new ResourceType("Crops", "Harvested crops from farming"));
         }
         
         private void InitializeSettlements()
         {
-            // Create a default settlement
-            GameObject settlementObj = new GameObject("Default Settlement");
-            Settlement settlement = settlementObj.AddComponent<Settlement>();
-            settlement.settlementName = "New Town";
-            settlement.population = 10; // Start with 10 people
-            settlement.money = 1000f; // Start with some money
-            settlements.Add(settlement);
+            // Clear any existing settlements
+            settlements.Clear();
         }
         
         private void InitializeNPCs()

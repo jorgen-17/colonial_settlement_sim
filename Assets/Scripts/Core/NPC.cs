@@ -12,6 +12,7 @@ namespace css.core
         public float energy = 100f;
         public float hunger = 0f;
         public float thirst = 0f;
+        public string settlementId;
         
         [Header("Schedule")]
         public float workStartHour = 8f;
@@ -57,9 +58,6 @@ namespace css.core
             {
                 inventory[resource] = 0f;
             }
-            
-            // Set initial money
-            money = Random.Range(10f, 50f);
             
             // Set up work route based on occupation
             SetupWorkRoute();
@@ -107,9 +105,46 @@ namespace css.core
         
         private WorkArea FindOrCreateWorkArea(WorkAreaType type)
         {
-            // This will be implemented to find existing work areas or create new ones
-            // For now, return null
-            return null;
+            // First, try to find an existing work area in the settlement
+            Settlement settlement = GameManager.Instance.settlements.Find(s => s.id == settlementId);
+            if (settlement == null)
+            {
+                Debug.LogError($"Settlement with ID {settlementId} not found for NPC {npcName}");
+                return null;
+            }
+            
+            WorkArea existingArea = settlement.workAreas.Find(area => area.areaType == type);
+            
+            if (existingArea != null)
+            {
+                return existingArea;
+            }
+            
+            // If no existing area found, create a new one
+            GameObject workAreaObj = Instantiate(GameManager.Instance.workAreaPrefab);
+            WorkArea newArea = workAreaObj.GetComponent<WorkArea>();
+            
+            // Set up the new work area
+            newArea.areaName = $"{type} {settlement.workAreas.Count + 1}";
+            newArea.areaType = type;
+            newArea.parentSettlement = settlement;
+            
+            // Position the new work area relative to the settlement
+            Vector3 settlementPos = settlement.transform.position;
+            Vector3 randomOffset = new Vector3(
+                Random.Range(-10f, 10f),
+                0f,
+                Random.Range(-10f, 10f)
+            );
+            workAreaObj.transform.position = settlementPos + randomOffset;
+            
+            // Initialize the work area type-specific properties
+            newArea.InitializeWorkAreaType();
+            
+            // Add the new work area to the settlement
+            settlement.workAreas.Add(newArea);
+            
+            return newArea;
         }
         
         private void UpdateWorkRoute()
@@ -140,7 +175,7 @@ namespace css.core
         
         private void UpdateNPCState()
         {
-            currentHour = (GameManager.Instance.CurrentGameTime / GameManager.Instance.dayLength) * 24f;
+            currentHour = GameManager.Instance.CurrentHour;
             
             // Update state based on time of day
             if (currentHour >= sleepStartHour || currentHour < sleepEndHour)

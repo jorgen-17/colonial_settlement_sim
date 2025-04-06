@@ -1,0 +1,115 @@
+{
+  "settlements": [
+    {
+      "id": "settlement_1",
+      "name": "New Haven",
+      "location": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "foundedDate": "1600-01-01",
+      "population": 10,
+      "resources": {
+        "food": 1000,
+        "wood": 2000,
+        "stone": 1500,
+        "gold": 500
+      },
+      "workAreas": [
+        {
+          "id": "hunting_ground_1",
+          "type": "HuntingGround",
+          "location": {
+            "x": 10,
+            "y": 0,
+            "z": 10
+          }
+        },
+        {
+          "id": "butchering_station_1",
+          "type": "ButcheringStation",
+          "location": {
+            "x": 5,
+            "y": 0,
+            "z": 5
+          }
+        },
+        {
+          "id": "tanning_station_1",
+          "type": "TanningStation",
+          "location": {
+            "x": 5,
+            "y": 0,
+            "z": 10
+          }
+        },
+        {
+          "id": "market_1",
+          "type": "Market",
+          "location": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "id": "farm_1",
+          "type": "Farm",
+          "location": {
+            "x": -20,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "id": "warehouse_1",
+          "type": "Warehouse",
+          "location": {
+            "x": -20,
+            "y": 0,
+            "z": 5
+          },
+          "capacity": 1000
+        }
+      ],
+      "settlers": [
+        {
+          "id": "settler_1",
+          "name": "John Smith",
+          "occupation": "hunter",
+          "money": 50,
+          "inventory": {
+            "meat": 0,
+            "leather": 0,
+            "processed_meat": 0
+          },
+          "schedule": {
+            "workStartHour": 8,
+            "workEndHour": 17,
+            "sleepStartHour": 22,
+            "sleepEndHour": 6
+          },
+          "settlementId": "settlement_1"
+        },
+        {
+          "id": "settler_2",
+          "name": "Mary Johnson",
+          "occupation": "farmer",
+          "money": 50,
+          "inventory": {
+            "crops": 0,
+            "seeds": 10
+          },
+          "schedule": {
+            "workStartHour": 8,
+            "workEndHour": 17,
+            "sleepStartHour": 22,
+            "sleepEndHour": 6
+          },
+          "settlementId": "settlement_1"
+        }
+      ]
+    }
+  ]
+} 

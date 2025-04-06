@@ -119,6 +119,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &461937391
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 461937393}
+  - component: {fileID: 461937392}
+  m_Layer: 0
+  m_Name: MenuManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &461937392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461937391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e66b430c671270d4aa6310bfbd44648c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuUI: {fileID: 0}
+--- !u!4 &461937393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461937391}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &715409539
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,9 +542,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameTimeScale: 1
   dayLength: 1200
+  workAreaPrefab: {fileID: 8957823889572746509}
   resourceTypes: []
   settlements: []
   npcs: []
+  playerCharacter: {fileID: 846919219}
+  currentDay: 0
 --- !u!4 &912019137
 Transform:
   m_ObjectHideFlags: 0
@@ -748,9 +796,7 @@ MonoBehaviour:
   npcPrefab: {fileID: 8749474220343587938}
   workAreaPrefab: {fileID: 8957823889572746509}
   settlementPrefab: {fileID: 4965242748397847496}
-  initialNPCs: 5
-  initialWorkAreas: 3
-  settlementPosition: {x: 0, y: 0, z: 0}
+  settlementsJsonPath: Data/settlements.json
 --- !u!4 &1816521634
 Transform:
   m_ObjectHideFlags: 0
@@ -977,3 +1023,4 @@ SceneRoots:
   - {fileID: 4965242748397847495}
   - {fileID: 1372080969}
   - {fileID: 846919225}
+  - {fileID: 461937393}

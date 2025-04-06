@@ -6,6 +6,7 @@ namespace css.core
     public class Settlement : MonoBehaviour
     {
         [Header("Basic Info")]
+        public string id;
         public string settlementName;
         [Header("Population")]
         public int population;
