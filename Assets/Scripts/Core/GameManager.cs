@@ -10,6 +10,8 @@ namespace css.core
         [Header("Game Settings")]
         public float gameTimeScale = 1f;
         public float dayLength = 1200f; // 20 minutes per day at normal time scale
+        public int startHour = 0;
+        public int startMinute = 0;
         
         [Header("Prefabs")]
         public GameObject workAreaPrefab;
@@ -30,9 +32,8 @@ namespace css.core
         public int currentDay = 0;
         
         public float CurrentGameTime => currentGameTime;
-        public int CurrentHour => (int)((currentGameTime / dayLength) * 24f);
-        public int CurrentMinute => (int)(((currentGameTime / dayLength) * 24f - CurrentHour) * 60f);
-        
+        public int CurrentHour => currentTimeToCurrentHour();
+        public int CurrentMinute => currentTimeToCurrentMinute(); 
         private void Awake()
         {
             if (Instance == null)
@@ -48,12 +49,17 @@ namespace css.core
         
         private void Start()
         {
+            InitializeGameTime();
             InitializeGame();
         }
         
         private void Update()
         {
             UpdateGameTime();
+        }
+
+        private void InitializeGameTime () {
+            currentGameTime += startHoursAndMinutesToFloat();
         }
         
         private void InitializeGame()
@@ -67,7 +73,21 @@ namespace css.core
             // Initialize NPCs and their jobs
             InitializeNPCs();
         }
-        
+
+        private int currentTimeToCurrentHour() {
+            return (int)((currentGameTime / dayLength) * 24f);
+        }
+
+        private int currentTimeToCurrentMinute() {
+            return (int)(((currentGameTime / dayLength) * 24f - CurrentHour) * 60f);
+        }
+
+        private float startHoursAndMinutesToFloat() {
+            float hoursFloat = (dayLength / 24.0f) * startHour; 
+            float minutesFloat = (dayLength / (24.0f * 60.0f)) * startMinute; 
+            return hoursFloat + minutesFloat;
+        }
+
         private void InitializeResourceTypes()
         {
             // Initialize basic resources
