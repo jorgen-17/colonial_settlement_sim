@@ -110,16 +110,7 @@ namespace css.core
         
         private void InitializeNPCs()
         {
-            // Find all NPCs in the scene and add them to the list
-            NPC[] sceneNPCs = Object.FindObjectsByType<NPC>(FindObjectsSortMode.None);
-            npcs.AddRange(sceneNPCs);
-            // todo create a json file that defines settlements and their npcs then
-            // load the json file and populate the settlements and npcs lists
-            
-            foreach (NPC npc in npcs)
-            {
-                // NPC initialization is handled in the NPC class's Start method
-            }
+            npcs.Clear();
         }
         
         private void UpdateGameTime()

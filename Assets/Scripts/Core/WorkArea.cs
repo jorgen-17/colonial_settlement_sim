@@ -56,7 +56,7 @@ namespace css.core
                     maxWorkers = 2;
                     isIndoor = false;
                     requiresTools = true;
-                    processingTime = 2.0f;
+                    processingTime = 20.0f;
                     outputResource = "meat";
                     outputAmount = 5f;
                     requiredTools.Add(new ResourceType("Hunting Tools", "Tools for hunting"));
@@ -66,7 +66,7 @@ namespace css.core
                     maxWorkers = 2;
                     isIndoor = true;
                     requiresTools = true;
-                    processingTime = 1.5f;
+                    processingTime = 15.0f;
                     outputResource = "processed_meat";
                     outputAmount = 3f;
                     requiredTools.Add(new ResourceType("Butchering Tools", "Tools for butchering"));
@@ -76,7 +76,7 @@ namespace css.core
                     maxWorkers = 2;
                     isIndoor = true;
                     requiresTools = true;
-                    processingTime = 2.0f;
+                    processingTime = 20.0f;
                     outputResource = "leather";
                     outputAmount = 2f;
                     requiredTools.Add(new ResourceType("Tanning Tools", "Tools for tanning"));
@@ -85,14 +85,14 @@ namespace css.core
                 case WorkAreaType.Market:
                     maxWorkers = 2;
                     isIndoor = true;
-                    processingTime = 1.0f;
+                    processingTime = 10.0f;
                     break;
                     
                 case WorkAreaType.Farm:
                     maxWorkers = 4;
                     isIndoor = false;
                     requiresTools = true;
-                    processingTime = 3.0f;
+                    processingTime = 30.0f;
                     outputResource = "crops";
                     outputAmount = 10f;
                     requiredTools.Add(new ResourceType("Farming Tools", "Tools for farming"));
@@ -101,7 +101,7 @@ namespace css.core
                 case WorkAreaType.Warehouse:
                     maxWorkers = 2;
                     isIndoor = true;
-                    processingTime = 0.5f;
+                    processingTime = 5.0f;
                     capacity = 1000f;
                     break;
                     

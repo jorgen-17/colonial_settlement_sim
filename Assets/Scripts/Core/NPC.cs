@@ -28,6 +28,7 @@ namespace css.core
         public NPCState currentState = NPCState.Idle;
         public Vector3 currentDestination;
         public WorkArea currentWorkArea;
+        public float moveSpeed = 5f;
         
         [Header("Work Route")]
         public List<WorkArea> workRoute = new List<WorkArea>();
@@ -49,6 +50,7 @@ namespace css.core
             UpdateNPCState();
             UpdateNeeds();
             UpdateWorkRoute();
+            UpdateMovement();
         }
         
         private void InitializeNPC()
@@ -156,20 +158,25 @@ namespace css.core
             {
                 currentWorkArea = workRoute[0];
                 requiredTimeAtCurrentArea = currentWorkArea.processingTime;
+                SetState(NPCState.Traveling);
                 return;
             }
-            
-            // Update time spent at current area
-            timeSpentAtCurrentArea += Time.deltaTime;
-            
-            // Check if we've spent enough time at the current area
-            if (timeSpentAtCurrentArea >= requiredTimeAtCurrentArea)
+
+            // Only update time if we're actually at the work area
+            if (IsAtCurrentWorkArea())
             {
-                // Move to next area in route
-                currentRouteIndex = (currentRouteIndex + 1) % workRoute.Count;
-                currentWorkArea = workRoute[currentRouteIndex];
-                timeSpentAtCurrentArea = 0f;
-                requiredTimeAtCurrentArea = currentWorkArea.processingTime;
+                timeSpentAtCurrentArea += Time.deltaTime;
+                
+                // Check if we've spent enough time at the current area
+                if (timeSpentAtCurrentArea >= requiredTimeAtCurrentArea)
+                {
+                    // Move to next area in route
+                    currentRouteIndex = (currentRouteIndex + 1) % workRoute.Count;
+                    currentWorkArea = workRoute[currentRouteIndex];
+                    timeSpentAtCurrentArea = 0f;
+                    requiredTimeAtCurrentArea = currentWorkArea.processingTime;
+                    SetState(NPCState.Traveling);
+                }
             }
         }
         
@@ -184,7 +191,14 @@ namespace css.core
             }
             else if (currentHour >= workStartHour && currentHour < workEndHour)
             {
-                SetState(NPCState.Working);
+                if (IsAtCurrentWorkArea())
+                {
+                    SetState(NPCState.Working);
+                }
+                else
+                {
+                    SetState(NPCState.Traveling);
+                }
             }
             else
             {
@@ -278,6 +292,31 @@ namespace css.core
         public float GetInventoryAmount(ResourceType resource)
         {
             return inventory.ContainsKey(resource) ? inventory[resource] : 0f;
+        }
+
+        private bool IsAtCurrentWorkArea()
+        {
+            if (currentWorkArea == null) return false;
+            
+            float distance = Vector3.Distance(transform.position, currentWorkArea.transform.position);
+            return distance <= 1.5f; // Consider within 2 units as "at" the work area
+        }
+
+        private void UpdateMovement()
+        {
+            if (currentState == NPCState.Traveling && currentWorkArea != null)
+            {
+                // Move towards current work area
+                Vector3 direction = (currentWorkArea.transform.position - transform.position).normalized;
+                transform.position += direction * moveSpeed * Time.deltaTime;
+                
+                // Rotate to face movement direction
+                if (direction != Vector3.zero)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+                }
+            }
         }
     }
 
