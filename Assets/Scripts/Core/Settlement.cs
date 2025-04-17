@@ -8,8 +8,9 @@ namespace css.core
         [Header("Basic Info")]
         public string id;
         public string settlementName;
+        public string foundedDate;
         [Header("Population")]
-        public int population;
+        public int Population => npcs.Count;
         public List<NPC> npcs = new List<NPC>();
         
         [Header("Resources")]
@@ -35,9 +36,6 @@ namespace css.core
                 resources[resource] = 0f;
                 resourcePrices[resource] = resource.baseValue;
             }
-            
-            // Initialize population
-            population = 0;
         }
         
         public void AddResource(ResourceType resource, float amount)

@@ -16,7 +16,6 @@ namespace css.core
         public string name;
         public Vector3Data location;
         public string foundedDate;
-        public int population;
         public Dictionary<string, float> resources;
         public List<WorkAreaData> workAreas;
         public List<SettlerData> settlers;

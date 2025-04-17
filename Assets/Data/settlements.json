@@ -8,8 +8,7 @@
         "y": 0,
         "z": 0
       },
-      "foundedDate": "1600-01-01",
-      "population": 10,
+      "foundedDate": "1600-09-16",
       "resources": {
         "food": 1000,
         "wood": 2000,
@@ -110,6 +109,19 @@
           "settlementId": "settlement_1"
         }
       ]
+    },
+    {
+      "id": "settlement_2",
+      "name": "Eau Gallie",
+      "location": {
+        "x": 50,
+        "y": 0,
+        "z": 50
+      },
+      "foundedDate": "1601-01-01",
+      "resources": {},
+      "workAreas": [],
+      "settlers": []
     }
   ]
 } 

@@ -42,7 +42,7 @@ namespace css.core
             Settlement settlement = settlementObj.GetComponent<Settlement>();
             settlement.id = settlementInfo.id;
             settlement.settlementName = settlementInfo.name;
-            settlement.population = settlementInfo.population;
+            settlement.foundedDate = settlementInfo.foundedDate;
 
             // Create work areas
             foreach (var workAreaData in settlementInfo.workAreas)

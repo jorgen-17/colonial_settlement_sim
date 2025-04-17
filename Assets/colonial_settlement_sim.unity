@@ -978,7 +978,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6402579657074226983, guid: cd53f360feef72549a1cf61d1e54ce3f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8749474220343587945}
   m_SourcePrefab: {fileID: 100100000, guid: cd53f360feef72549a1cf61d1e54ce3f, type: 3}
 --- !u!1 &8749474220343587938 stripped
 GameObject:
@@ -990,6 +993,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 33983589303939318, guid: cd53f360feef72549a1cf61d1e54ce3f, type: 3}
   m_PrefabInstance: {fileID: 8749474220343587937}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8749474220343587945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8749474220343587938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58be8d7e2573576439631a08985703ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textColor: {r: 0, g: 0, b: 0, a: 1}
+  fontSize: 3
+  textDimensions: {x: 5, y: 1}
+  heightOffset: 1.5
 --- !u!1001 &8957823889572746508
 PrefabInstance:
   m_ObjectHideFlags: 0
