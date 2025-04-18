@@ -12,9 +12,7 @@ namespace css.ui
         public GameObject menuPanel;
         public TextMeshProUGUI timeText;
         public TextMeshProUGUI dayText;
-        public GameObject settlementsListPanel;
-        public TextMeshProUGUI settlementsTitle;
-        public List<TextMeshProUGUI> settlementTexts = new List<TextMeshProUGUI>();
+        public SettlementsListPage settlementsPage;
 
         private void Awake()
         {
@@ -88,74 +86,21 @@ namespace css.ui
                 dayText.color = Color.white;
             }
 
-            // Create settlements list panel if it doesn't exist
-            if (settlementsListPanel == null)
+            // Create settlements page if it doesn't exist
+            if (settlementsPage == null)
             {
-                settlementsListPanel = new GameObject("SettlementsListPanel");
-                settlementsListPanel.transform.SetParent(menuPanel.transform);
-                
-                // Add RectTransform
-                RectTransform rectTransform = settlementsListPanel.AddComponent<RectTransform>();
-                rectTransform.anchorMin = new Vector2(0f, 1f);
-                rectTransform.anchorMax = new Vector2(0f, 1f);
-                rectTransform.sizeDelta = new Vector2(500, 200);
-                rectTransform.anchoredPosition = new Vector2(500, -200);
-
-                // Create settlements title
-                GameObject titleObj = new GameObject("SettlementsTitle");
-                titleObj.transform.SetParent(settlementsListPanel.transform);
-                
-                RectTransform titleRect = titleObj.AddComponent<RectTransform>();
-                titleRect.anchorMin = new Vector2(0f, 1f);
-                titleRect.anchorMax = new Vector2(0f, 1f);
-                titleRect.sizeDelta = new Vector2(480, 40);
-                titleRect.anchoredPosition = new Vector2(10, -10);
-
-                settlementsTitle = titleObj.AddComponent<TextMeshProUGUI>();
-                settlementsTitle.text = "Settlements";
-                settlementsTitle.alignment = TextAlignmentOptions.Left;
-                settlementsTitle.fontSize = 64;
-                settlementsTitle.color = Color.white;
+                GameObject settlementsPageObj = new GameObject("SettlementsPage");
+                settlementsPageObj.transform.SetParent(menuPanel.transform);
+                settlementsPage = settlementsPageObj.AddComponent<SettlementsListPage>();
+                settlementsPage.Initialize(menuPanel.transform);
             }
         }
 
         private void Update()
         {
-            UpdateSettlementsList();
-        }
-
-        private void UpdateSettlementsList()
-        {
-            if (GameManager.Instance == null) return;
-
-            // Clear existing settlement texts
-            foreach (var text in settlementTexts)
+            if (settlementsPage != null)
             {
-                Destroy(text.gameObject);
-            }
-            settlementTexts.Clear();
-
-            // Create new settlement texts
-            float yOffset = -100f; // Start below the title
-            foreach (var settlement in GameManager.Instance.settlements)
-            {
-                GameObject settlementObj = new GameObject($"Settlement_{settlement.settlementName}");
-                settlementObj.transform.SetParent(settlementsListPanel.transform);
-                
-                RectTransform rectTransform = settlementObj.AddComponent<RectTransform>();
-                rectTransform.anchorMin = new Vector2(0f, 1f);
-                rectTransform.anchorMax = new Vector2(0f, 1f);
-                rectTransform.sizeDelta = new Vector2(800, 30);
-                rectTransform.anchoredPosition = new Vector2(100, yOffset);
-
-                TextMeshProUGUI settlementText = settlementObj.AddComponent<TextMeshProUGUI>();
-                settlementText.text = $"{settlement.settlementName} Est({settlement.foundedDate}) (Pop: {settlement.Population})";
-                settlementText.alignment = TextAlignmentOptions.Left;
-                settlementText.fontSize = 48;
-                settlementText.color = Color.white;
-
-                settlementTexts.Add(settlementText);
-                yOffset -= 50f; // Move down for next settlement
+                settlementsPage.Update();
             }
         }
     }

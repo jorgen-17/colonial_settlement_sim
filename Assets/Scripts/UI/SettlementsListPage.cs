@@ -13,17 +13,20 @@ namespace css.ui
         public TextMeshProUGUI settlementsTitle;
         public List<TextMeshProUGUI> settlementTexts = new List<TextMeshProUGUI>();
 
-        private void Awake()
+        private Transform parentTransform;
+
+        public void Initialize(Transform parent)
         {
+            parentTransform = parent;
             CreateSettlementsListPanel();
         }
 
-        private void CreateSettlementsListPanel()
+        public void CreateSettlementsListPanel()
         {
             if (settlementsListPanel == null)
             {
                 settlementsListPanel = new GameObject("SettlementsListPanel");
-                settlementsListPanel.transform.SetParent(transform);
+                settlementsListPanel.transform.SetParent(parentTransform);
                 
                 // Add RectTransform
                 RectTransform rectTransform = settlementsListPanel.AddComponent<RectTransform>();
@@ -31,10 +34,6 @@ namespace css.ui
                 rectTransform.anchorMax = new Vector2(0f, 1f);
                 rectTransform.sizeDelta = new Vector2(500, 200);
                 rectTransform.anchoredPosition = new Vector2(500, -200);
-
-                // Add Image component for background
-                UnityEngine.UI.Image image = settlementsListPanel.AddComponent<UnityEngine.UI.Image>();
-                image.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
 
                 // Create settlements title
                 GameObject titleObj = new GameObject("SettlementsTitle");
@@ -54,7 +53,7 @@ namespace css.ui
             }
         }
 
-        private void Update()
+        public void Update()
         {
             UpdateSettlementsList();
         }
