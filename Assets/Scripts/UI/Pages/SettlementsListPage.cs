@@ -41,13 +41,16 @@ namespace css.ui
                         string settlementIdString = button.name.Replace("Settlement_", "");
                         Guid settlementId = Guid.Parse(settlementIdString);
                         
-                        // Use the GameManager method to find the settlement
+                        // Use direct lookup instead
                         Settlement clickedSettlement = GameManager.Instance.settlements.Find(s => s.id == settlementId);
                         
                         if (clickedSettlement != null)
                         {
                             selectedSettlement = clickedSettlement;
                             Debug.Log($"Clicked on settlement: {clickedSettlement.settlementName}, ID: {clickedSettlement.id}");
+                            
+                            // Trigger the settlement detail event with ID
+                            UIEvents.RequestSettlementDetail(clickedSettlement.id);
                             break;
                         }
                     }

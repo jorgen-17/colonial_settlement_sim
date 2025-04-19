@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using css.core;
+using System;
 
 namespace css.ui
 {
@@ -104,6 +105,54 @@ namespace css.ui
                 settlementsDetailPage = settlementsDetailPageObj.AddComponent<SettlementsDetailPage>();
                 settlementsDetailPage.Initialize(menuPanel.transform);
                 settlementsDetailPage.gameObject.SetActive(false); // Start hidden
+            }
+        }
+
+        private void OnEnable()
+        {
+            // Subscribe to UI events
+            UIEvents.OnPageChangeRequested += HandlePageChangeRequest;
+            UIEvents.OnSettlementDetailRequested += HandleSettlementDetailRequest;
+        }
+
+        private void OnDisable()
+        {
+            // Unsubscribe from UI events
+            UIEvents.OnPageChangeRequested -= HandlePageChangeRequest;
+            UIEvents.OnSettlementDetailRequested -= HandleSettlementDetailRequest;
+        }
+
+        private void HandleSettlementDetailRequest(Guid settlementId)
+        {
+            Debug.Log($"MenuUI received request to show settlement details for ID: {settlementId}");
+            
+            // Find the settlement by ID
+            Settlement settlement = GameManager.Instance.settlements.Find(s => s.id == settlementId);
+            
+            if (settlement != null)
+            {
+                // ShowSettlementDetails(settlement);
+                Debug.Log($"Settlement clicked: {settlement.settlementName}");
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find settlement with ID: {settlementId}");
+            }
+        }
+
+        private void HandlePageChangeRequest(string pageName)
+        {
+            Debug.Log($"MenuUI received request to go to page: {pageName}");
+            
+            // Handle generic page navigation
+            switch (pageName)
+            {
+                case "SettlementsList":
+                    ShowSettlementsList();
+                    break;
+                default:
+                    Debug.LogWarning($"Unknown page name: {pageName}");
+                    break;
             }
         }
 
