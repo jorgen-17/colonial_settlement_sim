@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using css.core;
-using System.Collections.Generic;
 
 namespace css.ui
 {
@@ -13,6 +12,7 @@ namespace css.ui
         public TextMeshProUGUI timeText;
         public TextMeshProUGUI dayText;
         public SettlementsListPage settlementsPage;
+        public SettlementsDetailPage settlementsDetailPage;
 
         private void Awake()
         {
@@ -93,6 +93,17 @@ namespace css.ui
                 settlementsPageObj.transform.SetParent(menuPanel.transform);
                 settlementsPage = settlementsPageObj.AddComponent<SettlementsListPage>();
                 settlementsPage.Initialize(menuPanel.transform);
+                settlementsPage.gameObject.SetActive(true); // Start visible
+            }
+
+            // Create settlements detail page if it doesn't exist
+            if (settlementsDetailPage == null)
+            {
+                GameObject settlementsDetailPageObj = new GameObject("SettlementsDetailPage");
+                settlementsDetailPageObj.transform.SetParent(menuPanel.transform);
+                settlementsDetailPage = settlementsDetailPageObj.AddComponent<SettlementsDetailPage>();
+                settlementsDetailPage.Initialize(menuPanel.transform);
+                settlementsDetailPage.gameObject.SetActive(false); // Start hidden
             }
         }
 
@@ -102,6 +113,23 @@ namespace css.ui
             {
                 settlementsPage.Update();
             }
+            // TODO: Uncomment this when we have a way to select a settlement
+            // if (settlementsDetailPage != null && GameManager.Instance.settlements.Count > 0) {
+            //     settlementsDetailPage.SetSettlement(GameManager.Instance.settlements[0]);
+            // }
+        }
+
+        public void ShowSettlementDetails(Settlement settlement)
+        {
+            settlementsPage.gameObject.SetActive(false);
+            settlementsDetailPage.gameObject.SetActive(true);
+            settlementsDetailPage.SetSettlement(settlement);
+        }
+
+        public void ShowSettlementsList()
+        {
+            settlementsPage.gameObject.SetActive(true);
+            settlementsDetailPage.gameObject.SetActive(false);
         }
     }
 } 
