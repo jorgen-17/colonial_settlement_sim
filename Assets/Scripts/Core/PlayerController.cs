@@ -19,6 +19,7 @@ namespace css.core
         private float verticalRotation = 0f;
         private Rigidbody rb;
         private bool isGrounded;
+        private bool isCameraEnabled = true;
         
         private void Start()
         {
@@ -46,6 +47,8 @@ namespace css.core
         
         private void HandleMouseLook()
         {
+            if (!isCameraEnabled) return;
+            
             // Get mouse input
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
@@ -95,6 +98,13 @@ namespace css.core
                     CursorLockMode.None : CursorLockMode.Locked;
                 Cursor.visible = !Cursor.visible;
             }
+        }
+
+        public void SetCameraEnabled(bool enabled)
+        {
+            isCameraEnabled = enabled;
+            Cursor.lockState = enabled ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !enabled;
         }
     }
 }

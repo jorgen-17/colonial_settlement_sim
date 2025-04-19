@@ -10,9 +10,17 @@ namespace css.ui
         public MenuUI menuUI;
 
         private bool isMenuVisible = false;
+        private PlayerController playerController;
 
         private void Awake()
         {
+            // Find the PlayerController
+            playerController = FindObjectOfType<PlayerController>();
+            if (playerController == null)
+            {
+                Debug.LogError("PlayerController not found in scene!");
+            }
+
             // Create MenuUI if it doesn't exist
             if (menuUI == null)
             {
@@ -44,6 +52,12 @@ namespace css.ui
         {
             isMenuVisible = !isMenuVisible;
             menuUI.menuPanel.SetActive(isMenuVisible);
+            
+            // Enable/disable camera control based on menu state
+            if (playerController != null)
+            {
+                playerController.SetCameraEnabled(!isMenuVisible);
+            }
         }
 
         private void UpdateTimeDisplay()
