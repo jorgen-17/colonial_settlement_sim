@@ -1,12 +1,12 @@
-using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace css.core
 {
     [System.Serializable]
     public class SettlementInfo
     {
-        public string id;
+        public Guid id;
         public string name;
         public Vector3Data location;
         public string foundedDate;

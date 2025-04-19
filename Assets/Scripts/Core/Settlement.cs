@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace css.core
 {
     public class Settlement : MonoBehaviour
     {
         [Header("Basic Info")]
-        public string id;
+        public Guid id;
         public string settlementName;
         public string foundedDate;
         [Header("Population")]

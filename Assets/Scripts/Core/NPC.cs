@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace css.core
 {
@@ -12,7 +13,7 @@ namespace css.core
         public float energy = 100f;
         public float hunger = 0f;
         public float thirst = 0f;
-        public string settlementId;
+        public Guid settlementId;
         
         [Header("Schedule")]
         public float workStartHour = 8f;
@@ -134,9 +135,9 @@ namespace css.core
             // Position the new work area relative to the settlement
             Vector3 settlementPos = settlement.transform.position;
             Vector3 randomOffset = new Vector3(
-                Random.Range(-10f, 10f),
+                UnityEngine.Random.Range(-10f, 10f),
                 0f,
-                Random.Range(-10f, 10f)
+                UnityEngine.Random.Range(-10f, 10f)
             );
             workAreaObj.transform.position = settlementPos + randomOffset;
             

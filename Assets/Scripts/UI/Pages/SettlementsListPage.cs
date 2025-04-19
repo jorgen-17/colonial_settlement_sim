@@ -3,6 +3,7 @@ using TMPro;
 using css.core;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 namespace css.ui
 {
@@ -34,15 +35,25 @@ namespace css.ui
                 // Check if the mouse is inside the settlement button
                 if (rectTransform.rect.Contains(localMousePos))
                 {
-                    // Get the settlement from the button's tag
-                    string settlementName = button.name.Replace("Settlement_", "");
-                    Settlement clickedSettlement = GameManager.Instance.settlements.Find(s => s.settlementName == settlementName);
-                    
-                    if (clickedSettlement != null)
+                    try
                     {
-                        selectedSettlement = clickedSettlement;
-                        Debug.Log($"Clicked on settlement: {clickedSettlement.settlementName}");
-                        break;
+                        // Get the settlement by ID using Guid
+                        string settlementIdString = button.name.Replace("Settlement_", "");
+                        Guid settlementId = Guid.Parse(settlementIdString);
+                        
+                        // Use the GameManager method to find the settlement
+                        Settlement clickedSettlement = GameManager.Instance.settlements.Find(s => s.id == settlementId);
+                        
+                        if (clickedSettlement != null)
+                        {
+                            selectedSettlement = clickedSettlement;
+                            Debug.Log($"Clicked on settlement: {clickedSettlement.settlementName}, ID: {clickedSettlement.id}");
+                            break;
+                        }
+                    }
+                    catch (FormatException ex)
+                    {
+                        Debug.LogError($"Failed to parse settlement ID: {ex.Message}");
                     }
                 }
             }
@@ -109,8 +120,7 @@ namespace css.ui
             float yOffset = -100f;
             foreach (var settlement in GameManager.Instance.settlements)
             {
-                // Create button container
-                GameObject buttonObj = new GameObject($"Settlement_{settlement.settlementName}");
+                GameObject buttonObj = new GameObject($"Settlement_{settlement.id}");
                 buttonObj.transform.SetParent(settlementsListPanel.transform);
                 
                 // Add RectTransform

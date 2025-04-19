@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 
 namespace css.core
 {
@@ -11,6 +12,6 @@ namespace css.core
         public float money;
         public Dictionary<string, float> inventory;
         public ScheduleData schedule;
-        public string settlementId;
+        public Guid settlementId;
     }
 } 
