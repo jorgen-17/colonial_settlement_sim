@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace css.ui
 {
-    public class SettlementsDetailPage : MonoBehaviour
+    public class SettlementsDetailPage : MonoBehaviour, MenuPage
     {
         [Header("UI References")]
         public GameObject detailPanel;
@@ -212,6 +212,15 @@ namespace css.ui
                 workAreaTexts.Add(workAreaText);
                 yOffset -= 40f; // Move down for next work area
             }
+        }
+
+        public void HandleMouseClick(Vector2 mousePosition)
+        {
+            // Handle clicks on detail page elements here
+            // For now, this is a placeholder that can be expanded later
+            Debug.Log("Click detected on Settlement Detail Page");
+            
+            // TODO: Implement click handling for various elements in the detail page
         }
     }
 } 

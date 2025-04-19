@@ -109,6 +109,12 @@ namespace css.ui
 
         private void Update()
         {
+            // Handle mouse clicks
+            if (Input.GetMouseButtonDown(0))
+            {
+                HandleMouseClick();
+            }
+            
             if (settlementsPage != null)
             {
                 settlementsPage.Update();
@@ -117,6 +123,18 @@ namespace css.ui
             // if (settlementsDetailPage != null && GameManager.Instance.settlements.Count > 0) {
             //     settlementsDetailPage.SetSettlement(GameManager.Instance.settlements[0]);
             // }
+        }
+        
+        private void HandleMouseClick()
+        {
+            // Get the current mouse position
+            Vector2 mousePosition = Input.mousePosition;
+            
+            // Check if settlements page is active and handle click
+            if (settlementsPage != null && settlementsPage.gameObject.activeInHierarchy)
+            {
+                settlementsPage.HandleMouseClick(mousePosition);
+            }
         }
 
         public void ShowSettlementDetails(Settlement settlement)

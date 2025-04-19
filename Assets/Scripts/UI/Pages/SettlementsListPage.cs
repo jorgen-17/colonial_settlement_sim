@@ -3,11 +3,10 @@ using TMPro;
 using css.core;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace css.ui
 {
-    public class SettlementsListPage : MonoBehaviour
+    public class SettlementsListPage : MonoBehaviour, MenuPage
     {
         [Header("UI References")]
         public GameObject settlementsListPanel;
@@ -19,18 +18,10 @@ namespace css.ui
         public void Update()
         {
             UpdateSettlementsList();
-            // Check for mouse clicks on settlements
-            if (Input.GetMouseButtonDown(0))
-            {
-                CheckSettlementClick();
-            }
         }
 
-        private void CheckSettlementClick()
+        public void HandleMouseClick(Vector2 mousePosition)
         {
-            // Get the current mouse position
-            Vector2 mousePosition = Input.mousePosition;
-            
             // Check if mouse is over any settlement
             foreach (GameObject button in settlementButtons)
             {
@@ -49,7 +40,8 @@ namespace css.ui
                     
                     if (clickedSettlement != null)
                     {
-                        OnSettlementClicked(clickedSettlement);
+                        selectedSettlement = clickedSettlement;
+                        Debug.Log($"Clicked on settlement: {clickedSettlement.settlementName}");
                         break;
                     }
                 }
@@ -155,12 +147,6 @@ namespace css.ui
                 settlementButtons.Add(buttonObj);
                 yOffset -= 50f;
             }
-        }
-
-        private void OnSettlementClicked(Settlement settlement)
-        {
-            selectedSettlement = settlement;
-            Debug.Log($"Clicked on settlement: {settlement.settlementName}");
         }
     }
 } 
