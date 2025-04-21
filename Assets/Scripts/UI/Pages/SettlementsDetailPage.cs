@@ -9,6 +9,7 @@ namespace css.ui
     {
         [Header("UI References")]
         public GameObject detailPanel;
+        public GameObject pageGameObject;
         public TextMeshProUGUI settlementTitle;
         public TextMeshProUGUI settlementDetails;
         public GameObject npcsPanel;
@@ -21,19 +22,16 @@ namespace css.ui
         private Transform parentTransform;
         private Settlement currentSettlement;
 
-        public void Initialize(Transform parent)
+        public void Initialize(Transform parent, GameObject pageGameObject)
         {
             parentTransform = parent;
+            this.pageGameObject = pageGameObject;
             CreateDetailPanel();
-            detailPanel.SetActive(false); // Hide the panel by default
         }
 
         public void SetSettlement(Settlement settlement)
         {
             currentSettlement = settlement;
-            UpdateSettlementDetails();
-            UpdateNPCsList();
-            UpdateWorkAreasList();
         }
 
         private void CreateDetailPanel()
@@ -221,6 +219,30 @@ namespace css.ui
             Debug.Log("Click detected on Settlement Detail Page");
             
             // TODO: Implement click handling for various elements in the detail page
+        }
+
+        public void Show()
+        {
+            pageGameObject.SetActive(true);
+            detailPanel.SetActive(true); 
+        }
+        
+        public void Hide()
+        {
+            pageGameObject.SetActive(false);
+            detailPanel.SetActive(false); 
+        }
+        
+        public bool IsActive()
+        {
+            return pageGameObject.activeInHierarchy && detailPanel.activeInHierarchy;
+        }
+
+        public void Update()
+        {
+            UpdateSettlementDetails();
+            UpdateNPCsList();
+            UpdateWorkAreasList();
         }
     }
 } 

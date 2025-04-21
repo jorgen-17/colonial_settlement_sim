@@ -13,9 +13,8 @@ namespace css.ui
         public GameObject settlementsListPanel;
         public TextMeshProUGUI settlementsTitle;
         public List<GameObject> settlementButtons = new List<GameObject>();
-        private Settlement selectedSettlement;
         private Transform parentTransform;
-
+        private GameObject pageGameObject;
         public void Update()
         {
             UpdateSettlementsList();
@@ -46,7 +45,6 @@ namespace css.ui
                         
                         if (clickedSettlement != null)
                         {
-                            selectedSettlement = clickedSettlement;
                             Debug.Log($"Clicked on settlement: {clickedSettlement.settlementName}, ID: {clickedSettlement.id}");
                             
                             // Trigger the settlement detail event with ID
@@ -62,9 +60,10 @@ namespace css.ui
             }
         }
 
-        public void Initialize(Transform parent)
+        public void Initialize(Transform parent, GameObject pageGameObject)
         {
             parentTransform = parent;
+            this.pageGameObject = pageGameObject;
             CreateSettlementsListPanel();
         }
 
@@ -105,11 +104,6 @@ namespace css.ui
 
         private void UpdateSettlementsList()
         {
-            if (selectedSettlement != null)
-            {
-                settlementsTitle.text = $"Selected: {selectedSettlement.settlementName}";
-            }
-            
             if (GameManager.Instance == null) return;
 
             // Clear existing settlement buttons
@@ -160,6 +154,23 @@ namespace css.ui
                 settlementButtons.Add(buttonObj);
                 yOffset -= 50f;
             }
+        }
+
+        public void Show()
+        {
+            pageGameObject.SetActive(true);
+            settlementsListPanel.SetActive(true);
+        }
+        
+        public void Hide()
+        {
+            pageGameObject.SetActive(false);
+            settlementsListPanel.SetActive(false);
+        }
+        
+        public bool IsActive()
+        {
+            return pageGameObject.activeInHierarchy && settlementsListPanel.activeInHierarchy;
         }
     }
 } 

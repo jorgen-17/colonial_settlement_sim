@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using css.core;
 using System;
+using System.Collections.Generic;
 
 namespace css.ui
 {
@@ -14,6 +15,10 @@ namespace css.ui
         public TextMeshProUGUI dayText;
         public SettlementsListPage settlementsPage;
         public SettlementsDetailPage settlementsDetailPage;
+        
+        // Page tracking
+        private MenuPage activePage;
+        private Dictionary<string, MenuPage> menuPagesMap = new Dictionary<string, MenuPage>();
 
         private void Awake()
         {
@@ -93,8 +98,8 @@ namespace css.ui
                 GameObject settlementsPageObj = new GameObject("SettlementsPage");
                 settlementsPageObj.transform.SetParent(menuPanel.transform);
                 settlementsPage = settlementsPageObj.AddComponent<SettlementsListPage>();
-                settlementsPage.Initialize(menuPanel.transform);
-                settlementsPage.gameObject.SetActive(true); // Start visible
+                settlementsPage.Initialize(menuPanel.transform, settlementsPageObj);
+                settlementsPage.Show();
             }
 
             // Create settlements detail page if it doesn't exist
@@ -103,9 +108,24 @@ namespace css.ui
                 GameObject settlementsDetailPageObj = new GameObject("SettlementsDetailPage");
                 settlementsDetailPageObj.transform.SetParent(menuPanel.transform);
                 settlementsDetailPage = settlementsDetailPageObj.AddComponent<SettlementsDetailPage>();
-                settlementsDetailPage.Initialize(menuPanel.transform);
-                settlementsDetailPage.gameObject.SetActive(false); // Start hidden
+                settlementsDetailPage.Initialize(menuPanel.transform, settlementsDetailPageObj);
+                settlementsDetailPage.Hide();
             }
+            
+            // Initialize page mapping
+            InitializePageMap();
+            
+            // Set default active page
+            activePage = settlementsPage;
+        }
+        
+        private void InitializePageMap()
+        {
+            // Add all pages to the map with their type names as keys
+            menuPagesMap.Add(nameof(SettlementsListPage), settlementsPage);
+            menuPagesMap.Add(nameof(SettlementsDetailPage), settlementsDetailPage);
+            
+            // You can add more pages here as they're created
         }
 
         private void OnEnable()
@@ -131,8 +151,29 @@ namespace css.ui
             
             if (settlement != null)
             {
-                // ShowSettlementDetails(settlement);
-                Debug.Log($"Settlement clicked: {settlement.settlementName}");
+                // Disable all pages
+                foreach (var page in menuPagesMap.Values)
+                {
+                    page.Hide();
+                }
+
+                // Get and enable the settlement detail page
+                MenuPage detailPage = menuPagesMap[nameof(SettlementsDetailPage)];
+                if (detailPage != null && detailPage is SettlementsDetailPage settlementsDetailPage)
+                {
+                    settlementsDetailPage.Show();
+                
+                    // Set it as the active page
+                    activePage = settlementsDetailPage;
+                
+                    // Set the settlement data
+                    settlementsDetailPage.SetSettlement(settlement);
+                    Debug.Log($"Switched to Settlement Detail page for: {settlement.settlementName}");
+                } 
+                else
+                {
+                    Debug.LogWarning($"Could not find settlement detail page");
+                }
             }
             else
             {
@@ -144,15 +185,26 @@ namespace css.ui
         {
             Debug.Log($"MenuUI received request to go to page: {pageName}");
             
-            // Handle generic page navigation
-            switch (pageName)
+            // Look for the requested page in our map
+            if (menuPagesMap.TryGetValue(pageName, out MenuPage requestedPage))
             {
-                case "SettlementsList":
-                    ShowSettlementsList();
-                    break;
-                default:
-                    Debug.LogWarning($"Unknown page name: {pageName}");
-                    break;
+                // Disable all pages
+                foreach (var page in menuPagesMap.Values)
+                {
+                    page.Hide();
+                }
+                
+                // Enable the requested page
+                requestedPage.Show();
+                
+                // Set it as the active page
+                activePage = requestedPage;
+                
+                Debug.Log($"Switched to page: {pageName}");
+            }
+            else
+            {
+                Debug.LogWarning($"Unknown page name: {pageName}");
             }
         }
 
@@ -164,39 +216,25 @@ namespace css.ui
                 HandleMouseClick();
             }
             
-            if (settlementsPage != null)
+            // Only update the active page
+            if (activePage != null && activePage.IsActive())
             {
-                settlementsPage.Update();
+                // For SettlementsListPage, we need to call its Update method explicitly
+                // since it has its own Update implementation
+                activePage.Update();
             }
-            // TODO: Uncomment this when we have a way to select a settlement
-            // if (settlementsDetailPage != null && GameManager.Instance.settlements.Count > 0) {
-            //     settlementsDetailPage.SetSettlement(GameManager.Instance.settlements[0]);
-            // }
         }
-        
+
         private void HandleMouseClick()
         {
             // Get the current mouse position
             Vector2 mousePosition = Input.mousePosition;
             
-            // Check if settlements page is active and handle click
-            if (settlementsPage != null && settlementsPage.gameObject.activeInHierarchy)
+            // Only pass clicks to the active page
+            if (activePage != null && activePage.IsActive())
             {
-                settlementsPage.HandleMouseClick(mousePosition);
+                activePage.HandleMouseClick(mousePosition);
             }
-        }
-
-        public void ShowSettlementDetails(Settlement settlement)
-        {
-            settlementsPage.gameObject.SetActive(false);
-            settlementsDetailPage.gameObject.SetActive(true);
-            settlementsDetailPage.SetSettlement(settlement);
-        }
-
-        public void ShowSettlementsList()
-        {
-            settlementsPage.gameObject.SetActive(true);
-            settlementsDetailPage.gameObject.SetActive(false);
         }
     }
 } 
