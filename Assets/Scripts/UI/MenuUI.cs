@@ -16,9 +16,17 @@ namespace css.ui
         public SettlementsListPage settlementsPage;
         public SettlementsDetailPage settlementsDetailPage;
         
+        // Back button
+        private Button backButton;
+        private TextMeshProUGUI backButtonText;
+        
         // Page tracking
         private MenuPage activePage;
         private Dictionary<string, MenuPage> menuPagesMap = new Dictionary<string, MenuPage>();
+        
+        // Event history tracking
+        private Stack<UIEventRecord> backStack = new Stack<UIEventRecord>();
+        private UIEventRecord lastEvent;
 
         private void Awake()
         {
@@ -51,6 +59,9 @@ namespace css.ui
                 // Add GraphicRaycaster
                 menuPanel.AddComponent<GraphicRaycaster>();
             }
+
+            // Create back button
+            CreateBackButton();
 
             // Create time text if it doesn't exist
             if (timeText == null)
@@ -100,6 +111,7 @@ namespace css.ui
                 settlementsPage = settlementsPageObj.AddComponent<SettlementsListPage>();
                 settlementsPage.Initialize(menuPanel.transform, settlementsPageObj);
                 settlementsPage.Show();
+                UpdateEventHistory(UIEventRecord.CreatePageChangeEvent(nameof(SettlementsListPage)));
             }
 
             // Create settlements detail page if it doesn't exist
@@ -119,6 +131,94 @@ namespace css.ui
             activePage = settlementsPage;
         }
         
+        private void CreateBackButton()
+        {
+            // Create back button if it doesn't exist
+            GameObject backButtonObj = new GameObject("BackButton");
+            backButtonObj.transform.SetParent(menuPanel.transform);
+            
+            // Add RectTransform
+            RectTransform backButtonRect = backButtonObj.AddComponent<RectTransform>();
+            backButtonRect.anchorMin = new Vector2(0.5f, 0.5f);
+            backButtonRect.anchorMax = new Vector2(0.5f, 0.5f);
+            backButtonRect.sizeDelta = new Vector2(100, 40);
+            backButtonRect.anchoredPosition = new Vector2(-880, 500);
+            
+            // Add Image component for background
+            Image backButtonImage = backButtonObj.AddComponent<Image>();
+            backButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 1f);
+            
+            // Add Button component
+            backButton = backButtonObj.AddComponent<Button>();
+            backButton.targetGraphic = backButtonImage;
+            ColorBlock colors = backButton.colors;
+            colors.normalColor = new Color(0.3f, 0.3f, 0.3f, 1f);
+            colors.highlightedColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+            colors.pressedColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+            backButton.colors = colors;
+            
+            // Add text to button
+            GameObject backButtonTextObj = new GameObject("Text");
+            backButtonTextObj.transform.SetParent(backButtonObj.transform);
+            
+            RectTransform textRect = backButtonTextObj.AddComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.sizeDelta = Vector2.zero;
+            textRect.anchoredPosition = Vector2.zero;
+            
+            backButtonText = backButtonTextObj.AddComponent<TextMeshProUGUI>();
+            backButtonText.text = "Back";
+            backButtonText.color = Color.white;
+            backButtonText.fontSize = 18;
+            backButtonText.alignment = TextAlignmentOptions.Center;
+            
+            // Add click listener
+            // onClick listener is not working, so we need to check if mouse click inside back button rect instead
+            // backButton.onClick.AddListener(HandleBackButtonClick);
+            
+            // Initially hide the button
+            backButton.gameObject.SetActive(false);
+        }
+        
+        private void HandleBackButtonClick()
+        {
+            Debug.Log("Back button clicked");
+
+            if (backStack.Count > 0)
+            {
+                // Pop the previous event from the stack
+                UIEventRecord previousEvent = backStack.Pop();
+
+                // avoid circular back button loop
+                if (backStack.Count == 0)
+                {
+                    lastEvent = null;
+                }
+                
+                // Execute the appropriate event based on type
+                switch (previousEvent.Type)
+                {
+                    case UIEventRecord.EventType.PageChange:
+                        UIEvents.RequestPageChange(previousEvent.PageName);
+                        break;
+                    
+                    case UIEventRecord.EventType.SettlementDetail:
+                        UIEvents.RequestSettlementDetail(previousEvent.SettlementId);
+                        break;
+                }
+                
+                // Update the button visibility
+                UpdateBackButtonVisibility();
+            }
+        }
+        
+        private void UpdateBackButtonVisibility()
+        {
+            // Only show the back button if we have items in the stack
+            backButton.gameObject.SetActive(backStack.Count > 0);
+        }
+
         private void InitializePageMap()
         {
             // Add all pages to the map with their type names as keys
@@ -145,7 +245,7 @@ namespace css.ui
         private void HandleSettlementDetailRequest(Guid settlementId)
         {
             Debug.Log($"MenuUI received request to show settlement details for ID: {settlementId}");
-            
+
             // Find the settlement by ID
             Settlement settlement = GameManager.Instance.settlements.Find(s => s.id == settlementId);
             
@@ -168,6 +268,9 @@ namespace css.ui
                 
                     // Set the settlement data
                     settlementsDetailPage.SetSettlement(settlement);
+
+                    UpdateEventHistory(UIEventRecord.CreateSettlementDetailEvent(settlementId));
+           
                     Debug.Log($"Switched to Settlement Detail page for: {settlement.settlementName}");
                 } 
                 else
@@ -200,6 +303,8 @@ namespace css.ui
                 // Set it as the active page
                 activePage = requestedPage;
                 
+                UpdateEventHistory(UIEventRecord.CreatePageChangeEvent(pageName));
+           
                 Debug.Log($"Switched to page: {pageName}");
             }
             else
@@ -227,14 +332,40 @@ namespace css.ui
 
         private void HandleMouseClick()
         {
-            // Get the current mouse position
+             // Get the current mouse position
             Vector2 mousePosition = Input.mousePosition;
+ 
+            RectTransform rectTransform = backButton.GetComponent<RectTransform>();
+            // Convert mouse position to local space of the settlement button
+            Vector2 localMousePos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                rectTransform, mousePosition, null, out localMousePos);
+                
+            // Check if the mouse is inside the settlement button
+            if (rectTransform.rect.Contains(localMousePos))
+            {
+                Debug.Log("Click detected on Back Button");
+                HandleBackButtonClick();
+            }
             
-            // Only pass clicks to the active page
+            // Only pass clicks to the active page if not hitting UI
             if (activePage != null && activePage.IsActive())
             {
                 activePage.HandleMouseClick(mousePosition);
             }
+        }
+
+        private void UpdateEventHistory(UIEventRecord newLastEvent)
+        {
+            if (lastEvent != null)
+            {
+                backStack.Push(lastEvent);
+            }
+            
+            lastEvent = newLastEvent;
+            
+            // Update back button visibility after history changes
+            UpdateBackButtonVisibility();
         }
     }
 } 
