@@ -191,10 +191,7 @@ namespace css.ui
                 UIEventRecord previousEvent = backStack.Pop();
 
                 // avoid circular back button loop
-                if (backStack.Count == 0)
-                {
-                    lastEvent = null;
-                }
+                lastEvent = null;
                 
                 // Execute the appropriate event based on type
                 switch (previousEvent.Type)
