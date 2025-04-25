@@ -2,74 +2,64 @@ using System;
 
 namespace css.ui
 {
-    // Struct to represent a UI event with all possible parameters
-    public class UIEventRecord
+    // Base class for UI events
+    public abstract class UIEventRecord
     {
-        public enum EventType
+        public DateTime Timestamp { get; protected set; }
+        
+        protected UIEventRecord()
         {
-            PageChange,
-            SettlementDetail,
-            NPCDetail
+            Timestamp = DateTime.Now;
         }
         
-        public EventType Type { get; private set; }
+        public abstract override string ToString();
+    }
+    
+    // Page change event type
+    public class PageChangeEvent : UIEventRecord
+    {
         public string PageName { get; private set; }
-        public Guid SettlementId { get; private set; }
-        public Guid NPCId { get; private set; }
-        public DateTime Timestamp { get; private set; }
         
-        // Constructor for page change events
-        public static UIEventRecord CreatePageChangeEvent(string pageName)
+        public PageChangeEvent(string pageName)
         {
-            return new UIEventRecord 
-            {
-                Type = EventType.PageChange,
-                PageName = pageName,
-                SettlementId = Guid.Empty,
-                NPCId = Guid.Empty,
-                Timestamp = DateTime.Now
-            };
-        }
-        
-        // Constructor for settlement detail events
-        public static UIEventRecord CreateSettlementDetailEvent(Guid settlementId)
-        {
-            return new UIEventRecord
-            {
-                Type = EventType.SettlementDetail,
-                PageName = null,
-                SettlementId = settlementId,
-                NPCId = Guid.Empty,
-                Timestamp = DateTime.Now
-            };
-        }
-        
-        // Constructor for NPC detail events
-        public static UIEventRecord CreateNPCDetailEvent(Guid npcId)
-        {
-            return new UIEventRecord
-            {
-                Type = EventType.NPCDetail,
-                PageName = null,
-                SettlementId = Guid.Empty,
-                NPCId = npcId,
-                Timestamp = DateTime.Now
-            };
+            PageName = pageName;
         }
         
         public override string ToString()
         {
-            switch (Type)
-            {
-                case EventType.PageChange:
-                    return $"[{Timestamp:HH:mm:ss}] Page Change: {PageName}";
-                case EventType.SettlementDetail:
-                    return $"[{Timestamp:HH:mm:ss}] Settlement Detail: {SettlementId}";
-                case EventType.NPCDetail:
-                    return $"[{Timestamp:HH:mm:ss}] NPC Detail: {NPCId}";
-                default:
-                    return "Unknown Event";
-            }
+            return $"[{Timestamp:HH:mm:ss}] Page Change: {PageName}";
+        }
+    }
+    
+    // Settlement detail event type
+    public class SettlementDetailEvent : UIEventRecord
+    {
+        public Guid SettlementId { get; private set; }
+        
+        public SettlementDetailEvent(Guid settlementId)
+        {
+            SettlementId = settlementId;
+        }
+        
+        public override string ToString()
+        {
+            return $"[{Timestamp:HH:mm:ss}] Settlement Detail: {SettlementId}";
+        }
+    }
+    
+    // NPC detail event type
+    public class NPCDetailEvent : UIEventRecord
+    {
+        public Guid NPCId { get; private set; }
+        
+        public NPCDetailEvent(Guid npcId)
+        {
+            NPCId = npcId;
+        }
+        
+        public override string ToString()
+        {
+            return $"[{Timestamp:HH:mm:ss}] NPC Detail: {NPCId}";
         }
     }
 } 

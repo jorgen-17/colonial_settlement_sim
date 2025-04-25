@@ -112,7 +112,7 @@ namespace css.ui
                 settlementsPage = settlementsPageObj.AddComponent<SettlementsListPage>();
                 settlementsPage.Initialize(menuPanel.transform, settlementsPageObj);
                 settlementsPage.Show();
-                UpdateEventHistory(UIEventRecord.CreatePageChangeEvent(nameof(SettlementsListPage)));
+                UpdateEventHistory(new PageChangeEvent(nameof(SettlementsListPage)));
             }
 
             // Create settlements detail page if it doesn't exist
@@ -207,18 +207,18 @@ namespace css.ui
                 lastEvent = null;
                 
                 // Execute the appropriate event based on type
-                switch (previousEvent.Type)
+                switch (previousEvent)
                 {
-                    case UIEventRecord.EventType.PageChange:
-                        UIEvents.RequestPageChange(previousEvent.PageName);
+                    case PageChangeEvent pageChangeEvent:
+                        UIEvents.RequestPageChange(pageChangeEvent.PageName);
                         break;
                     
-                    case UIEventRecord.EventType.SettlementDetail:
-                        UIEvents.RequestSettlementDetail(previousEvent.SettlementId);
+                    case SettlementDetailEvent settlementDetailEvent:
+                        UIEvents.RequestSettlementDetail(settlementDetailEvent.SettlementId);
                         break;
                         
-                    case UIEventRecord.EventType.NPCDetail:
-                        UIEvents.RequestNPCDetail(previousEvent.NPCId);
+                    case NPCDetailEvent npcDetailEvent:
+                        UIEvents.RequestNPCDetail(npcDetailEvent.NPCId);
                         break;
                 }
                 
@@ -226,7 +226,7 @@ namespace css.ui
                 UpdateBackButtonVisibility();
             }
         }
-        
+       
         private void UpdateBackButtonVisibility()
         {
             // Only show the back button if we have items in the stack
@@ -286,7 +286,7 @@ namespace css.ui
                     // Set the settlement data
                     settlementsDetailPage.SetSettlement(settlement);
 
-                    UpdateEventHistory(UIEventRecord.CreateSettlementDetailEvent(settlementId));
+                    UpdateEventHistory(new SettlementDetailEvent(settlementId));
            
                     Debug.Log($"Switched to Settlement Detail page for: {settlement.settlementName}");
                 } 
@@ -320,7 +320,7 @@ namespace css.ui
                 // Set it as the active page
                 activePage = requestedPage;
                 
-                UpdateEventHistory(UIEventRecord.CreatePageChangeEvent(pageName));
+                UpdateEventHistory(new PageChangeEvent(pageName));
            
                 Debug.Log($"Switched to page: {pageName}");
             }
@@ -361,7 +361,7 @@ namespace css.ui
                     
                     npcDetailPage.SetNPC(npc);
 
-                    UpdateEventHistory(UIEventRecord.CreateNPCDetailEvent(npcId));
+                    UpdateEventHistory(new NPCDetailEvent(npcId));
                     
                     Debug.Log($"Switched to NPC Detail page for: {npc.npcName}");
                 }
