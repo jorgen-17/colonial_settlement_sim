@@ -88,14 +88,15 @@ namespace css.core
         {
             // Position settler near the settlement center
             Vector3 position = settlement.transform.position + new Vector3(
-                UnityEngine.Random.Range(-5f, 5f),
+                Random.Range(-5f, 5f),
                 0.5f,
-                UnityEngine.Random.Range(-5f, 5f)
+                Random.Range(-5f, 5f)
             );
 
             GameObject npcObj = Instantiate(npcPrefab, position, Quaternion.identity);
             NPC npc = npcObj.GetComponent<NPC>();
             
+            npc.id = settlerData.id;
             npc.npcName = settlerData.name;
             npc.occupation = settlerData.occupation;
             npc.money = settlerData.money;

@@ -15,6 +15,7 @@ namespace css.ui
         public TextMeshProUGUI dayText;
         public SettlementsListPage settlementsPage;
         public SettlementsDetailPage settlementsDetailPage;
+        public MenuPage npcDetailPage;
         
         // Back button
         private Button backButton;
@@ -124,6 +125,18 @@ namespace css.ui
                 settlementsDetailPage.Hide();
             }
             
+            // Create NPC detail page if it doesn't exist
+            if (npcDetailPage == null)
+            {
+                GameObject npcDetailPageObj = new GameObject("NPCDetailPage");
+                npcDetailPageObj.transform.SetParent(menuPanel.transform);
+                // Add the NPCDetailPage component using AddComponent<>() with string-based type loading
+                MonoBehaviour pageComponent = (MonoBehaviour)npcDetailPageObj.AddComponent(Type.GetType("css.ui.NPCDetailPage, Assembly-CSharp"));
+                npcDetailPage = (MenuPage)pageComponent;
+                npcDetailPage.Initialize(menuPanel.transform, npcDetailPageObj);
+                npcDetailPage.Hide();
+            }
+            
             // Initialize page mapping
             InitializePageMap();
             
@@ -203,6 +216,10 @@ namespace css.ui
                     case UIEventRecord.EventType.SettlementDetail:
                         UIEvents.RequestSettlementDetail(previousEvent.SettlementId);
                         break;
+                        
+                    case UIEventRecord.EventType.NPCDetail:
+                        UIEvents.RequestNPCDetail(previousEvent.NPCId);
+                        break;
                 }
                 
                 // Update the button visibility
@@ -221,6 +238,7 @@ namespace css.ui
             // Add all pages to the map with their type names as keys
             menuPagesMap.Add(nameof(SettlementsListPage), settlementsPage);
             menuPagesMap.Add(nameof(SettlementsDetailPage), settlementsDetailPage);
+            menuPagesMap.Add(nameof(NPCDetailPage), npcDetailPage);
             
             // You can add more pages here as they're created
         }
@@ -230,6 +248,7 @@ namespace css.ui
             // Subscribe to UI events
             UIEvents.OnPageChangeRequested += HandlePageChangeRequest;
             UIEvents.OnSettlementDetailRequested += HandleSettlementDetailRequest;
+            UIEvents.OnNPCDetailRequested += HandleNPCDetailRequest;
         }
 
         private void OnDisable()
@@ -237,6 +256,7 @@ namespace css.ui
             // Unsubscribe from UI events
             UIEvents.OnPageChangeRequested -= HandlePageChangeRequest;
             UIEvents.OnSettlementDetailRequested -= HandleSettlementDetailRequest;
+            UIEvents.OnNPCDetailRequested -= HandleNPCDetailRequest;
         }
 
         private void HandleSettlementDetailRequest(Guid settlementId)
@@ -307,6 +327,52 @@ namespace css.ui
             else
             {
                 Debug.LogWarning($"Unknown page name: {pageName}");
+            }
+        }
+
+        private void HandleNPCDetailRequest(Guid npcId)
+        {
+            Debug.Log($"MenuUI received request to show NPC details for ID: {npcId}");
+            
+            // Find the NPC by ID - we need to search all settlements
+            NPC npc = null;
+            foreach (var settlement in GameManager.Instance.settlements)
+            {
+                npc = settlement.npcs.Find(n => n.id == npcId);
+                if (npc != null) break;
+            }
+            
+            if (npc != null)
+            {
+                // Disable all pages
+                foreach (var page in menuPagesMap.Values)
+                {
+                    page.Hide();
+                }
+                
+                MenuPage detailPage = menuPagesMap[nameof(NPCDetailPage)];
+                if (detailPage  != null && detailPage is NPCDetailPage npcDetailPage)
+                {
+                    // Show the page
+                    npcDetailPage.Show();
+                    
+                    // Set it as the active page
+                    activePage = npcDetailPage;
+                    
+                    npcDetailPage.SetNPC(npc);
+
+                    UpdateEventHistory(UIEventRecord.CreateNPCDetailEvent(npcId));
+                    
+                    Debug.Log($"Switched to NPC Detail page for: {npc.npcName}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Could not find NPC detail page");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find NPC with ID: {npcId}");
             }
         }
 

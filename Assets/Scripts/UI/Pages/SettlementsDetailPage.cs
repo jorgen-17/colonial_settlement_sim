@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using css.core;
 using System.Collections.Generic;
+using System;
 
 namespace css.ui
 {
@@ -157,7 +158,8 @@ namespace css.ui
             float yOffset = -60f; // Start below the title
             foreach (var npc in currentSettlement.npcs)
             {
-                GameObject npcObj = new GameObject($"NPC_{npc.npcName}");
+                // Use NPC's unique ID in the GameObject name instead of instance ID
+                GameObject npcObj = new GameObject($"NPC_{npc.id}");
                 npcObj.transform.SetParent(npcsPanel.transform);
                 
                 RectTransform rectTransform = npcObj.AddComponent<RectTransform>();
@@ -165,7 +167,7 @@ namespace css.ui
                 rectTransform.anchorMax = new Vector2(0f, 1f);
                 rectTransform.sizeDelta = new Vector2(380, 30);
                 rectTransform.anchoredPosition = new Vector2(10, yOffset);
-
+                
                 TextMeshProUGUI npcText = npcObj.AddComponent<TextMeshProUGUI>();
                 npcText.text = $"{npc.npcName} - {npc.occupation}";
                 npcText.alignment = TextAlignmentOptions.Left;
@@ -214,11 +216,47 @@ namespace css.ui
 
         public void HandleMouseClick(Vector2 mousePosition)
         {
-            // Handle clicks on detail page elements here
-            // For now, this is a placeholder that can be expanded later
-            Debug.Log("Click detected on Settlement Detail Page");
+            // Handle clicks on NPC entries
+            foreach (var npcText in npcTexts)
+            {
+                RectTransform rectTransform = npcText.GetComponent<RectTransform>();
+                
+                // Convert mouse position to local space of the NPC text
+                Vector2 localMousePos;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    rectTransform, mousePosition, null, out localMousePos);
+                
+                // Check if the mouse is inside the NPC text
+                if (rectTransform.rect.Contains(localMousePos))
+                {
+                    // Extract NPC GUID from the GameObject name
+                    string npcIDString = npcText.gameObject.name.Replace("NPC_", "");
+                    
+                    try
+                    {
+                        // Parse the GUID string
+                        Guid npcId = Guid.Parse(npcIDString);
+                        
+                        // Find the NPC in the settlement
+                        NPC clickedNPC = currentSettlement.npcs.Find(n => n.id == npcId);
+                        
+                        if (clickedNPC != null)
+                        {
+                            Debug.Log($"Clicked on NPC: {clickedNPC.npcName}");
+                            
+                            // Use the NPC's ID field to navigate to the detail page
+                            UIEvents.RequestNPCDetail(clickedNPC.id);
+                            break;
+                        }
+                    }
+                    catch (FormatException ex)
+                    {
+                        Debug.LogError($"Failed to parse NPC GUID: {ex.Message}");
+                    }
+                }
+            }
             
-            // TODO: Implement click handling for various elements in the detail page
+            // Handle clicks on work areas could be added here if needed
         }
 
         public void Show()

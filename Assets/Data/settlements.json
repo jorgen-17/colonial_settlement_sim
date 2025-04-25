@@ -74,7 +74,7 @@
       ],
       "settlers": [
         {
-          "id": "settler_1",
+          "id": "12e68d2c-9a71-4b7e-8a12-63b4c23f78a9",
           "name": "John Smith",
           "occupation": "hunter",
           "money": 50,
@@ -92,7 +92,7 @@
           "settlementId": "f8e7d6c5-b4a3-42f1-9e8d-7c6b5a432109"
         },
         {
-          "id": "settler_2",
+          "id": "3fc7b5d9-4ee1-4c8f-9abe-98765d4c3210",
           "name": "Mary Johnson",
           "occupation": "farmer",
           "money": 50,

@@ -14,6 +14,7 @@ namespace css.core
         public float hunger = 0f;
         public float thirst = 0f;
         public Guid settlementId;
+        public Guid id; // Unique identifier for the NPC
         
         [Header("Schedule")]
         public float workStartHour = 8f;

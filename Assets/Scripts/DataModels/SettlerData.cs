@@ -6,7 +6,7 @@ namespace css.core
     [System.Serializable]
     public class SettlerData
     {
-        public string id;
+        public Guid id;
         public string name;
         public string occupation;
         public float money;
