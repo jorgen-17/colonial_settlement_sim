@@ -217,7 +217,7 @@ namespace css.core
                     // Start work route if not already working
                     if (workRoute.Count > 0)
                     {
-                        currentWorkArea = workRoute[0];
+                        currentWorkArea = workRoute[currentRouteIndex];
                         requiredTimeAtCurrentArea = currentWorkArea.processingTime;
                     }
                     break;
@@ -270,7 +270,7 @@ namespace css.core
             if (currentWorkArea == null) return false;
             
             float distance = Vector3.Distance(transform.position, currentWorkArea.transform.position);
-            return distance <= 1.5f; // Consider within 2 units as "at" the work area
+            return distance <= 0.5f; // Consider within 2 units as "at" the work area
         }
 
         private void UpdateMovement()
