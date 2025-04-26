@@ -74,27 +74,25 @@ namespace css.core
             switch (occupation.ToLower())
             {
                 case "hunter":
-                    // Find or create work areas for hunting route
-                    WorkArea huntingGround = FindOrCreateWorkArea(WorkAreaType.HuntingGround);
-                    WorkArea butcheringStation = FindOrCreateWorkArea(WorkAreaType.ButcheringStation);
-                    WorkArea tanningStation = FindOrCreateWorkArea(WorkAreaType.TanningStation);
-                    WorkArea market = FindOrCreateWorkArea(WorkAreaType.Market);
+                    WorkArea huntingGround = FindWorkArea(WorkAreaType.HuntingGround);
+                    WorkArea butcheringStation = FindWorkArea(WorkAreaType.ButcheringStation);
+                    WorkArea tanningStation = FindWorkArea(WorkAreaType.TanningStation);
+                    WorkArea market = FindWorkArea(WorkAreaType.Market);
                     
-                    workRoute.Add(huntingGround);
-                    workRoute.Add(butcheringStation);
-                    workRoute.Add(tanningStation);
-                    workRoute.Add(market);
+                    if (huntingGround != null) workRoute.Add(huntingGround);
+                    if (butcheringStation != null) workRoute.Add(butcheringStation);
+                    if (tanningStation != null) workRoute.Add(tanningStation);
+                    if (market != null) workRoute.Add(market);
                     break;
                     
                 case "farmer":
-                    // Find or create work areas for farming route
-                    WorkArea farm = FindOrCreateWorkArea(WorkAreaType.Farm);
-                    WorkArea warehouse = FindOrCreateWorkArea(WorkAreaType.Warehouse);
-                    WorkArea farmersMarket = FindOrCreateWorkArea(WorkAreaType.Market);
+                    WorkArea farm = FindWorkArea(WorkAreaType.Farm);
+                    WorkArea warehouse = FindWorkArea(WorkAreaType.Warehouse);
+                    WorkArea farmersMarket = FindWorkArea(WorkAreaType.Market);
                     
-                    workRoute.Add(farm);
-                    workRoute.Add(warehouse);
-                    workRoute.Add(farmersMarket);
+                    if (farm != null) workRoute.Add(farm);
+                    if (warehouse != null) workRoute.Add(warehouse);
+                    if (farmersMarket != null) workRoute.Add(farmersMarket);
                     break;
                     
                 // Add more occupations and their routes here
@@ -107,7 +105,7 @@ namespace css.core
             }
         }
         
-        private WorkArea FindOrCreateWorkArea(WorkAreaType type)
+        private WorkArea FindWorkArea(WorkAreaType type)
         {
             // First, try to find an existing work area in the settlement
             Settlement settlement = GameManager.Instance.settlements.Find(s => s.id == settlementId);
@@ -119,36 +117,7 @@ namespace css.core
             
             WorkArea existingArea = settlement.workAreas.Find(area => area.areaType == type);
             
-            if (existingArea != null)
-            {
-                return existingArea;
-            }
-            
-            // If no existing area found, create a new one
-            GameObject workAreaObj = Instantiate(GameManager.Instance.workAreaPrefab);
-            WorkArea newArea = workAreaObj.GetComponent<WorkArea>();
-            
-            // Set up the new work area
-            newArea.areaName = $"{type} {settlement.workAreas.Count + 1}";
-            newArea.areaType = type;
-            newArea.parentSettlement = settlement;
-            
-            // Position the new work area relative to the settlement
-            Vector3 settlementPos = settlement.transform.position;
-            Vector3 randomOffset = new Vector3(
-                UnityEngine.Random.Range(-10f, 10f),
-                0f,
-                UnityEngine.Random.Range(-10f, 10f)
-            );
-            workAreaObj.transform.position = settlementPos + randomOffset;
-            
-            // Initialize the work area type-specific properties
-            newArea.InitializeWorkAreaType();
-            
-            // Add the new work area to the settlement
-            settlement.workAreas.Add(newArea);
-            
-            return newArea;
+            return existingArea;
         }
         
         private void UpdateWorkRoute()
