@@ -136,15 +136,26 @@ namespace css.core
             // Only update time if we're actually at the work area
             if (IsAtCurrentWorkArea())
             {
-                timeSpentAtCurrentArea += Time.deltaTime;
+                // Update time worked at this work area
+                float deltaTime = Time.deltaTime;
+                currentWorkArea.Work(id, deltaTime);
                 
-                // Check if we've spent enough time at the current area
-                if (timeSpentAtCurrentArea >= requiredTimeAtCurrentArea)
+                // Check if we've completed the work at this area
+                if (currentWorkArea.GetTimeWorked(id) >= requiredTimeAtCurrentArea)
                 {
+                    // Complete the work and get resource
+                    // todo: need to add resource consumption to work area. e.g. animal carcass -> butchering station -> hide, bone, meat
+                    ResourceType resource = currentWorkArea.FinishWork(id);
+                    
+                    // Add resource to inventory if we received one
+                    if (resource != null)
+                    {
+                        AddToInventory(resource, currentWorkArea.outputAmount);
+                    }
+                    
                     // Move to next area in route
                     currentRouteIndex = (currentRouteIndex + 1) % workRoute.Count;
                     currentWorkArea = workRoute[currentRouteIndex];
-                    timeSpentAtCurrentArea = 0f;
                     requiredTimeAtCurrentArea = currentWorkArea.processingTime;
                     SetState(NPCState.Traveling);
                 }
@@ -214,11 +225,10 @@ namespace css.core
             switch (newState)
             {
                 case NPCState.Working:
-                    // Start work route if not already working
-                    if (workRoute.Count > 0)
+                    // Start work at current work area if not already working
+                    if (currentWorkArea != null && IsAtCurrentWorkArea())
                     {
-                        currentWorkArea = workRoute[currentRouteIndex];
-                        requiredTimeAtCurrentArea = currentWorkArea.processingTime;
+                        currentWorkArea.AssignWorker(id);
                     }
                     break;
                 case NPCState.Sleeping:
@@ -249,6 +259,10 @@ namespace css.core
             if (inventory.ContainsKey(resource))
             {
                 inventory[resource] += amount;
+            } 
+            else
+            {
+                inventory.Add(resource, amount);
             }
         }
         
@@ -270,11 +284,22 @@ namespace css.core
             if (currentWorkArea == null) return false;
             
             float distance = Vector3.Distance(transform.position, currentWorkArea.transform.position);
-            return distance <= 0.5f; // Consider within 2 units as "at" the work area
+            return distance <= 0.5f; // Consider within 0.5 units as "at" the work area
         }
 
+        // Get the time worked at current work area for UI display
+        public float GetTimeWorkedAtCurrentArea()
+        {
+            if (currentWorkArea != null)
+            {
+                return currentWorkArea.GetTimeWorked(id);
+            }
+            return 0f;
+        }
+        
         private void UpdateMovement()
         {
+            // TODO: if is at current work area, don't move. now some NPCs are falling through the floor
             if (currentState == NPCState.Traveling && currentWorkArea != null)
             {
                 // Move towards current work area

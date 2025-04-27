@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace css.core
 {
@@ -29,6 +30,9 @@ namespace css.core
         public bool requiresTools = false;
         public List<ResourceType> requiredTools = new List<ResourceType>();
         public bool isIndoor = true; // Whether this is an indoor or outdoor work area
+        
+        // Track worker time
+        private Dictionary<Guid, float> workerTime = new Dictionary<Guid, float>();
         
         private void Start()
         {
@@ -126,28 +130,61 @@ namespace css.core
             }
         }
         
-        public bool AssignWorker(NPC worker)
+        public bool AssignWorker(Guid npcId)
         {
-            if (assignedWorkers.Count < maxWorkers)
+            if (workerTime.Count < maxWorkers && !workerTime.ContainsKey(npcId))
             {
-                assignedWorkers.Add(worker);
+                workerTime[npcId] = 0f;
                 return true;
             }
             return false;
         }
         
-        public void RemoveWorker(NPC worker)
+        public void RemoveWorker(Guid npcId)
         {
-            assignedWorkers.Remove(worker);
+            if (workerTime.ContainsKey(npcId))
+            {
+                workerTime.Remove(npcId);
+            }
+        }
+        
+        public void Work(Guid npcId, float timeWorked)
+        {
+            if (workerTime.ContainsKey(npcId))
+            {
+                workerTime[npcId] += timeWorked;
+            }
+        }
+        
+        public ResourceType FinishWork(Guid npcId)
+        {
+            if (workerTime.ContainsKey(npcId) && workerTime[npcId] >= processingTime)
+            {
+                // Worker has completed the required time
+                workerTime.Remove(npcId);
+                
+                // TODO: make work area a store of resources which can replenish over time
+                return new ResourceType(outputResource, $"{outputResource} resource");
+            }
+            return null;
+        }
+        
+        public float GetTimeWorked(Guid npcId)
+        {
+            if (workerTime.ContainsKey(npcId))
+            {
+                return workerTime[npcId];
+            }
+            return 0f;
         }
         
         public void UpdateProduction()
         {
-            if (!isOperational || assignedWorkers.Count == 0)
+            if (!isOperational || workerTime.Count == 0)
                 return;
             
             // Calculate actual production rate based on workers and efficiency
-            float actualProductionRate = productionRate * efficiency * (float)assignedWorkers.Count / maxWorkers;
+            float actualProductionRate = productionRate * efficiency * (float)workerTime.Count / maxWorkers;
             
             // Process inputs and generate outputs
             foreach (var input in inputResources)
@@ -162,7 +199,10 @@ namespace css.core
                 }
             }
         }
-        
+       // TODO: make some work areas probabilistic based on the worker skill and on the quality of tools
+       // such as a hunting ground that sometimes doesn't return any resources or you are more likely to
+       // get a rabbit but less likely to get a deer. Eventually would be cool to model actual animal 
+       // behavior and animal population dynamics.
         private void GenerateOutputs(ResourceType input, float amount)
         {
             // This will be implemented based on specific work area types
@@ -178,12 +218,12 @@ namespace css.core
         
         public bool HasAvailableSpace()
         {
-            return assignedWorkers.Count < maxWorkers;
+            return workerTime.Count < maxWorkers;
         }
         
         public float GetEfficiency()
         {
-            return efficiency * (float)assignedWorkers.Count / maxWorkers;
+            return efficiency * (float)workerTime.Count / maxWorkers;
         }
         
         public bool HasRequiredTools(NPC worker)

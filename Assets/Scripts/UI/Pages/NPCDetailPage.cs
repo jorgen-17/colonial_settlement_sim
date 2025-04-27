@@ -370,7 +370,8 @@ namespace css.ui
             {
                 if (item.Value > 0)
                 {
-                    GameObject resourceObj = new GameObject($"Resource_{item.Key}");
+                    // todo add ids to resources
+                    GameObject resourceObj = new GameObject($"Resource_{item.Key.name}");
                     resourceObj.transform.SetParent(inventoryPanel.transform);
                     
                     RectTransform resourceRect = resourceObj.AddComponent<RectTransform>();
@@ -380,7 +381,7 @@ namespace css.ui
                     resourceRect.anchoredPosition = new Vector2(200, yOffset);
                     
                     TextMeshProUGUI resourceText = resourceObj.AddComponent<TextMeshProUGUI>();
-                    resourceText.text = $"{item.Key}: {item.Value:F1}";
+                    resourceText.text = $"{item.Key.name}: {item.Value:F1}";
                     resourceText.alignment = TextAlignmentOptions.Center;
                     resourceText.fontSize = 28;
                     resourceText.color = Color.white;
@@ -437,7 +438,7 @@ namespace css.ui
                 progressRect.anchoredPosition = new Vector2(200, yOffset);
                 
                 TextMeshProUGUI progressText = progressObj.AddComponent<TextMeshProUGUI>();
-                progressText.text = $"Progress: {currentNPC.timeSpentAtCurrentArea:F1}/{currentNPC.requiredTimeAtCurrentArea:F1}";
+                progressText.text = $"Progress: {currentNPC.GetTimeWorkedAtCurrentArea():F1}/{currentNPC.requiredTimeAtCurrentArea:F1}";
                 progressText.alignment = TextAlignmentOptions.Center;
                 progressText.fontSize = 28;
                 progressText.color = Color.white;
