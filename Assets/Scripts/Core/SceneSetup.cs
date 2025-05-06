@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.IO;
 using Newtonsoft.Json;
+using System;
 
 namespace css.core
 {
@@ -64,22 +65,9 @@ namespace css.core
             Vector3 position = workAreaData.location.ToVector3();
             GameObject workAreaObj = Instantiate(workAreaPrefab, position, Quaternion.identity);
             WorkArea workArea = workAreaObj.GetComponent<WorkArea>();
-            
-            workArea.areaName = workAreaData.id;
-            workArea.areaType = (WorkAreaType)System.Enum.Parse(typeof(WorkAreaType), workAreaData.type);
-            workArea.processingTime = workAreaData.processingTime;
-            workArea.parentSettlement = settlement;
-
-            if (workAreaData.output != null)
-            {
-                workArea.outputResource = workAreaData.output.resource;
-                workArea.outputAmount = workAreaData.output.amount;
-            }
-
-            if (workAreaData.capacity > 0)
-            {
-                workArea.capacity = workAreaData.capacity;
-            }
+            workArea.InitializeWorkArea(workAreaData.id,
+                (WorkAreaType)Enum.Parse(typeof(WorkAreaType), workAreaData.type),
+                settlement.id);
 
             settlement.workAreas.Add(workArea);
         }
@@ -88,9 +76,9 @@ namespace css.core
         {
             // Position settler near the settlement center
             Vector3 position = settlement.transform.position + new Vector3(
-                Random.Range(-5f, 5f),
+                UnityEngine.Random.Range(-5f, 5f),
                 0.5f,
-                Random.Range(-5f, 5f)
+                UnityEngine.Random.Range(-5f, 5f)
             );
 
             GameObject npcObj = Instantiate(npcPrefab, position, Quaternion.identity);

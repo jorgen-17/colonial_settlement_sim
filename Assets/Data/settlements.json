@@ -17,7 +17,7 @@
       },
       "workAreas": [
         {
-          "id": "hunting_ground_1",
+          "id": "f8e7d6c5-b4a3-42f1-9e8d-7c6b5a432109",
           "type": "HuntingGround",
           "location": {
             "x": 10,
@@ -26,7 +26,7 @@
           }
         },
         {
-          "id": "butchering_station_1",
+          "id": "90244b1f-3bb6-4580-9c5d-627b669d2a0e",
           "type": "ButcheringStation",
           "location": {
             "x": 5,
@@ -35,7 +35,7 @@
           }
         },
         {
-          "id": "tanning_station_1",
+          "id": "95042fff-4cae-4cef-a613-645b69595c1a",
           "type": "TanningStation",
           "location": {
             "x": 5,
@@ -44,7 +44,7 @@
           }
         },
         {
-          "id": "market_1",
+          "id": "afefc99c-fdb5-489e-a3d0-18b7511e1a01",
           "type": "Market",
           "location": {
             "x": 0,
@@ -53,23 +53,13 @@
           }
         },
         {
-          "id": "farm_1",
+          "id": "f8ac03ac-7a91-42eb-bfa9-649c53f42eb4",
           "type": "Farm",
           "location": {
             "x": -20,
             "y": 0,
             "z": 0
           }
-        },
-        {
-          "id": "warehouse_1",
-          "type": "Warehouse",
-          "location": {
-            "x": -20,
-            "y": 0,
-            "z": 5
-          },
-          "capacity": 1000
         }
       ],
       "settlers": [

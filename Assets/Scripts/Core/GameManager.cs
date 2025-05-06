@@ -128,11 +128,7 @@ namespace css.core
         private void OnNewDay()
         {
             // Update all settlements' economies
-            foreach (Settlement settlement in settlements)
-            {
-                settlement.UpdateEconomy();
-            }
-            
+           
             // Update all NPCs' daily routines
             // This will be implemented later
         }

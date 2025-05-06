@@ -419,7 +419,7 @@ namespace css.ui
                 currentAreaRect.anchoredPosition = new Vector2(200, yOffset);
                 
                 TextMeshProUGUI currentAreaText = currentAreaObj.AddComponent<TextMeshProUGUI>();
-                currentAreaText.text = $"Current: {currentNPC.currentWorkArea.areaName}";
+                currentAreaText.text = $"Current: {currentNPC.currentWorkArea.areaType.ToString()}";
                 currentAreaText.alignment = TextAlignmentOptions.Center;
                 currentAreaText.fontSize = 28;
                 currentAreaText.color = Color.yellow;
@@ -470,7 +470,7 @@ namespace css.ui
             int index = 0;
             foreach (var workArea in currentNPC.workRoute)
             {
-                GameObject areaObj = new GameObject($"Area_{workArea.areaName}");
+                GameObject areaObj = new GameObject($"Area_{workArea.id}");
                 areaObj.transform.SetParent(workRoutePanel.transform);
                 
                 RectTransform areaRect = areaObj.AddComponent<RectTransform>();

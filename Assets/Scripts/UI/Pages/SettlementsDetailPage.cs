@@ -194,7 +194,7 @@ namespace css.ui
             float yOffset = -80f; // Start below the title
             foreach (var workArea in currentSettlement.workAreas)
             {
-                GameObject workAreaObj = new GameObject($"WorkArea_{workArea.areaName}");
+                GameObject workAreaObj = new GameObject($"WorkArea_{workArea.id}");
                 workAreaObj.transform.SetParent(workAreasPanel.transform);
                 
                 RectTransform rectTransform = workAreaObj.AddComponent<RectTransform>();

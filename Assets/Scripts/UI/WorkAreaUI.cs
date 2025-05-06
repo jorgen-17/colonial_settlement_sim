@@ -39,7 +39,7 @@ namespace css.ui
             
             // Add TextMeshPro component
             nameText = nameTextObj.AddComponent<TextMeshPro>();
-            nameText.text = workArea.areaName;
+            nameText.text = workArea.areaType.ToString();
             nameText.alignment = TextAlignmentOptions.Center;
             nameText.fontSize = fontSize;
             nameText.color = textColor;
@@ -50,13 +50,6 @@ namespace css.ui
             rectTransform.localScale = new Vector3(1, 1, 1);
         }
 
-        private void Update()
-        {
-            if (nameText != null && workArea != null)
-            {
-                // Update text if area name changes
-                nameText.text = workArea.areaName;
-            }
-        }
+        private void Update() { }
     }
 } 

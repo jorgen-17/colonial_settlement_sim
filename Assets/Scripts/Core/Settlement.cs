@@ -65,49 +65,18 @@ namespace css.core
             return resourcePrices.ContainsKey(resource) ? resourcePrices[resource] : resource.baseValue;
         }
         
-        public void UpdateEconomy()
-        {
-            // Update resource prices based on supply and demand
-            foreach (var resource in resources)
-            {
-                float supply = resource.Value;
-                float demand = CalculateResourceDemand(resource.Key);
-                
-                // Basic price adjustment based on supply and demand
-                float priceMultiplier = demand / (supply + 1f); // Add 1 to avoid division by zero
-                resourcePrices[resource.Key] = resource.Key.baseValue * priceMultiplier;
-            }
-        }
-        
-        private float CalculateResourceDemand(ResourceType resource)
-        {
-            float demand = 0f;
-            
-            // Calculate demand based on work areas and their needs
-            foreach (WorkArea workArea in workAreas)
-            {
-                if (workArea.inputResources.ContainsKey(resource))
-                {
-                    demand += workArea.inputResources[resource];
-                }
-            }
-            
-            return demand;
-        }
-        
         public void AddWorkArea(WorkArea workArea)
         {
             if (!workAreas.Contains(workArea))
             {
+                workArea.parentSettlementId = id;
                 workAreas.Add(workArea);
-                workArea.parentSettlement = this;
             }
         }
         
         public void RemoveWorkArea(WorkArea workArea)
         {
             workAreas.Remove(workArea);
-            workArea.parentSettlement = null;
         }
     }
 } 

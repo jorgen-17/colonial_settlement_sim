@@ -87,11 +87,9 @@ namespace css.core
                     
                 case "farmer":
                     WorkArea farm = FindWorkArea(WorkAreaType.Farm);
-                    WorkArea warehouse = FindWorkArea(WorkAreaType.Warehouse);
                     WorkArea farmersMarket = FindWorkArea(WorkAreaType.Market);
                     
                     if (farm != null) workRoute.Add(farm);
-                    if (warehouse != null) workRoute.Add(warehouse);
                     if (farmersMarket != null) workRoute.Add(farmersMarket);
                     break;
                     
