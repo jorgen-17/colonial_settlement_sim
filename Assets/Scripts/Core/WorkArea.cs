@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace css.core
 {
@@ -10,18 +11,19 @@ namespace css.core
         public Guid id;
         public WorkAreaType areaType;
         public Guid parentSettlementId;
-        public string outputResource;
-        public float outputAmount;
+        public List<Resource> requiredInputs;
+        public List<Resource> outputResources;
         
         [Header("Functionality")]
         public List<NPC> assignedWorkers = new List<NPC>();
        
         [Header("Work Area Specific")]
         public float processingTime = 0f; // Time in hours to process inputs into outputs
-        
+
         // Track worker time
         private Dictionary<Guid, float> workerTime = new Dictionary<Guid, float>();
-       
+        private List<Resource> inputResources = new List<Resource>();
+        
         public void InitializeWorkArea(Guid id, WorkAreaType areaType, Guid settlementId)
         {
             this.id = id;
@@ -32,42 +34,69 @@ namespace css.core
             {
                 case WorkAreaType.HuntingGround:
                     processingTime = 20.0f;
-                    outputResource = "animal_carcass";
-                    outputAmount = 1f;
+                    outputResources = new List<Resource> { ResourceFactory.CreateResource(ResourceType.AnimalCarcass, 1f) };
                     break;
                     
                 case WorkAreaType.ButcheringStation:
                     processingTime = 15.0f;
-                    outputResource = "meat";
-                    outputAmount = 3f;
+                    requiredInputs = new List<Resource> { ResourceFactory.CreateResource(ResourceType.AnimalCarcass, 1f) };
+                    outputResources = new List<Resource> { ResourceFactory.CreateResource(ResourceType.Meat, 5f),
+                        ResourceFactory.CreateResource(ResourceType.Hide, 1f) };
                     break;
                     
                 case WorkAreaType.TanningStation:
                     processingTime = 20.0f;
-                    outputResource = "leather";
-                    outputAmount = 2f;
+                    requiredInputs = new List<Resource> { ResourceFactory.CreateResource(ResourceType.Hide, 1f) };
+                    outputResources = new List<Resource> { ResourceFactory.CreateResource(ResourceType.Leather, 1f) };
                     break;
                     
                 case WorkAreaType.Market:
                     processingTime = 10.0f;
                     break;
-                    
+
+                case WorkAreaType.Well:
+                    processingTime = 10.0f;
+                    outputResources = new List<Resource> { ResourceFactory.CreateResource(ResourceType.Water, 10f) };
+                    break;
+
                 case WorkAreaType.Farm:
                     processingTime = 30.0f;
-                    outputResource = "crops";
-                    outputAmount = 10f;
+                    requiredInputs = new List<Resource> { ResourceFactory.CreateResource(ResourceType.Water, 10f),
+                        ResourceFactory.CreateResource(ResourceType.Seeds, 1f) };
+                    outputResources = new List<Resource> { ResourceFactory.CreateResource(ResourceType.Crops, 10f) };
                     break;
             }
         }
 
-        public bool AssignWorker(Guid npcId)
+        public bool StartWork(Guid npcId, List<Resource> inputResources)
         {
+            if (!CanStartWork(inputResources))
+            {
+                Debug.Log("Cannot start work, not enough input resources");
+                return false;
+            }
+
             if (!workerTime.ContainsKey(npcId))
             {
+                this.inputResources = inputResources;
                 workerTime[npcId] = 0f;
+            }
+
+            return true;
+        }
+
+        private bool CanStartWork(List<Resource> inputResources)
+        {
+            if (requiredInputs == null || requiredInputs.Count == 0)
+            {
                 return true;
             }
-            return false;
+            else if (inputResources == null || inputResources.Count != requiredInputs.Count)
+            {
+                return false;
+            }
+
+            return inputResources.All(r => requiredInputs.Any(ir => ir.type == r.type && ir.amount >= r.amount));
         }
         
         public void RemoveWorker(Guid npcId)
@@ -86,16 +115,21 @@ namespace css.core
             }
         }
 
-        // TODO change ResourceType to Resource
-        public ResourceType FinishWork(Guid npcId)
+        public List<Resource> FinishWork(Guid npcId)
         {
             if (workerTime.ContainsKey(npcId) && workerTime[npcId] >= processingTime)
             {
                 // Worker has completed the required time
                 workerTime.Remove(npcId);
-                
+
+                if (areaType == WorkAreaType.Market)
+                {
+                    float amount = inputResources.Aggregate(0f, (sum, resource) => sum + resource.amount * resource.baseValue);
+                    return new List<Resource> { ResourceFactory.CreateResource(ResourceType.Gold, amount) };
+                }
+
                 // TODO: make work area a store of resources which can replenish over time
-                return new ResourceType(outputResource, $"{outputResource} resource");
+                return outputResources;
             }
             return null;
         }
@@ -113,6 +147,7 @@ namespace css.core
     public enum WorkAreaType
     {
         Market,
+        Well,
         Farm,
         HuntingGround,
         ButcheringStation,

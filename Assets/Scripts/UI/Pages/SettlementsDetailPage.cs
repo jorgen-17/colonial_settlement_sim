@@ -204,7 +204,7 @@ namespace css.ui
                 rectTransform.anchoredPosition = new Vector2(150, yOffset);
 
                 TextMeshProUGUI workAreaText = workAreaObj.AddComponent<TextMeshProUGUI>();
-                workAreaText.text = $"{workArea.areaType} - {workArea.outputResource} ({workArea.outputAmount}/hr)";
+                workAreaText.text = $"{workArea.areaType}";
                 workAreaText.alignment = TextAlignmentOptions.Left;
                 workAreaText.fontSize = 36;
                 workAreaText.color = Color.white;

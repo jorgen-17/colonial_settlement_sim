@@ -53,6 +53,15 @@
           }
         },
         {
+          "id": "da2efec5-2f75-41f5-8f0f-ad33d902e100",
+          "type": "Well",
+          "location": {
+            "x": -20,
+            "y": 0,
+            "z": 5
+          }
+        },
+        {
           "id": "f8ac03ac-7a91-42eb-bfa9-649c53f42eb4",
           "type": "Farm",
           "location": {
@@ -68,11 +77,7 @@
           "name": "John Smith",
           "occupation": "hunter",
           "money": 50,
-          "inventory": {
-            "meat": 0,
-            "leather": 0,
-            "processed_meat": 0
-          },
+          "inventory": {},
           "schedule": {
             "workStartHour": 8,
             "workEndHour": 17,

@@ -368,10 +368,10 @@ namespace css.ui
             // Add all resources in inventory
             foreach (var item in currentNPC.inventory)
             {
-                if (item.Value > 0)
+                if (item.baseValue > 0)
                 {
                     // todo add ids to resources
-                    GameObject resourceObj = new GameObject($"Resource_{item.Key.name}");
+                    GameObject resourceObj = new GameObject($"Resource_{item.type}");
                     resourceObj.transform.SetParent(inventoryPanel.transform);
                     
                     RectTransform resourceRect = resourceObj.AddComponent<RectTransform>();
@@ -381,7 +381,7 @@ namespace css.ui
                     resourceRect.anchoredPosition = new Vector2(200, yOffset);
                     
                     TextMeshProUGUI resourceText = resourceObj.AddComponent<TextMeshProUGUI>();
-                    resourceText.text = $"{item.Key.name}: {item.Value:F1}";
+                    resourceText.text = $"{item.type}: {item.amount:F1}";
                     resourceText.alignment = TextAlignmentOptions.Center;
                     resourceText.fontSize = 28;
                     resourceText.color = Color.white;

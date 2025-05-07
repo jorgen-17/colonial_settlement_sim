@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace css.core
 {
@@ -23,7 +24,7 @@ namespace css.core
         public float sleepEndHour = 6f;
         
         [Header("Inventory")]
-        public Dictionary<ResourceType, float> inventory = new Dictionary<ResourceType, float>();
+        public List<Resource> inventory = new List<Resource>();
         public float money = 0f;
         
         [Header("Current State")]
@@ -39,7 +40,6 @@ namespace css.core
         public float requiredTimeAtCurrentArea = 0f;
         
         private Settlement homeSettlement;
-        private Job currentJob;
         private float currentHour = 0f;
         
         private void Start()
@@ -57,12 +57,6 @@ namespace css.core
         
         private void InitializeNPC()
         {
-            // Initialize inventory
-            foreach (ResourceType resource in GameManager.Instance.resourceTypes)
-            {
-                inventory[resource] = 0f;
-            }
-            
             // Set up work route based on occupation
             SetupWorkRoute();
         }
@@ -86,9 +80,11 @@ namespace css.core
                     break;
                     
                 case "farmer":
+                    WorkArea well = FindWorkArea(WorkAreaType.Well);
                     WorkArea farm = FindWorkArea(WorkAreaType.Farm);
                     WorkArea farmersMarket = FindWorkArea(WorkAreaType.Market);
                     
+                    if (well != null) workRoute.Add(well);
                     if (farm != null) workRoute.Add(farm);
                     if (farmersMarket != null) workRoute.Add(farmersMarket);
                     break;
@@ -143,12 +139,15 @@ namespace css.core
                 {
                     // Complete the work and get resource
                     // todo: need to add resource consumption to work area. e.g. animal carcass -> butchering station -> hide, bone, meat
-                    ResourceType resource = currentWorkArea.FinishWork(id);
+                    List<Resource> resources = currentWorkArea.FinishWork(id);
                     
                     // Add resource to inventory if we received one
-                    if (resource != null)
+                    if (resources != null)
                     {
-                        AddToInventory(resource, currentWorkArea.outputAmount);
+                        foreach (Resource resource in resources)
+                        {
+                            AddToInventory(resource);
+                        }
                     }
                     
                     // Move to next area in route
@@ -226,7 +225,20 @@ namespace css.core
                     // Start work at current work area if not already working
                     if (currentWorkArea != null && IsAtCurrentWorkArea())
                     {
-                        currentWorkArea.AssignWorker(id);
+                        List<Resource> inputResources = FindResourcesInInventory(currentWorkArea.requiredInputs);
+                        if (currentWorkArea.StartWork(id, inputResources))
+                        {
+                            RemoveFromInventory(inputResources);
+                        }
+                        else
+                        {
+                            // todo: figure out how to reroute NPC to go find missing resources
+                            // for now I can just reset them to begginng of their work route
+                            currentRouteIndex = 0;
+                            currentWorkArea = workRoute[currentRouteIndex];
+                            requiredTimeAtCurrentArea = currentWorkArea.processingTime;
+                            Debug.LogWarning($"NPC {npcName} failed to start work at {currentWorkArea.areaType}");
+                        }
                     }
                     break;
                 case NPCState.Sleeping:
@@ -238,6 +250,11 @@ namespace css.core
                     FindIdleActivity();
                     break;
             }
+        }
+
+        private List<Resource> FindResourcesInInventory(List<Resource> resources)
+        {
+            return inventory.Where(r => resources.Any(res => res.type == r.type && res.amount <= r.amount)).ToList();
         }
         
         private void GoHome()
@@ -251,30 +268,41 @@ namespace css.core
             // Implementation will include activities like shopping, socializing, etc.
             // This will be implemented later
         }
-        
-        public void AddToInventory(ResourceType resource, float amount)
+
+        // todo amount not needed its now in the Resource class
+        public void AddToInventory(Resource resource)
         {
-            if (inventory.ContainsKey(resource))
+            Resource existingResource = inventory.Find(r => r.type == resource.type);
+            if (existingResource != null)
             {
-                inventory[resource] += amount;
+                existingResource.amount += resource.amount;
             } 
             else
             {
-                inventory.Add(resource, amount);
+                inventory.Add(resource);
             }
         }
-        
-        public void RemoveFromInventory(ResourceType resource, float amount)
+
+        public void RemoveFromInventory(List<Resource> resources)
         {
-            if (inventory.ContainsKey(resource))
+            foreach (Resource resource in resources)
             {
-                inventory[resource] = Mathf.Max(0f, inventory[resource] - amount);
+                RemoveFromInventory(resource);
+            }
+        }
+
+        public void RemoveFromInventory(Resource resource)
+        {
+            Resource existingResource = inventory.Find(r => r.type == resource.type);
+            if (existingResource != null)
+            {
+                existingResource.amount = Mathf.Max(0f, existingResource.amount - resource.amount);
             }
         }
         
-        public float GetInventoryAmount(ResourceType resource)
+        public float GetInventoryAmount(Resource resource)
         {
-            return inventory.ContainsKey(resource) ? inventory[resource] : 0f;
+            return inventory.Find(r => r.type == resource.type)?.amount ?? 0f;
         }
 
         private bool IsAtCurrentWorkArea()

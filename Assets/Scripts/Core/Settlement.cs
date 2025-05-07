@@ -15,11 +15,11 @@ namespace css.core
         public List<NPC> npcs = new List<NPC>();
         
         [Header("Resources")]
-        public Dictionary<ResourceType, float> resources = new Dictionary<ResourceType, float>();
+        public Dictionary<Resource, float> resources = new Dictionary<Resource, float>();
         
         [Header("Economy")]
         public float money = 0f;
-        public Dictionary<ResourceType, float> resourcePrices = new Dictionary<ResourceType, float>();
+        public Dictionary<Resource, float> resourcePrices = new Dictionary<Resource, float>();
         
         [Header("Work Areas")]
         public List<WorkArea> workAreas = new List<WorkArea>();
@@ -32,14 +32,14 @@ namespace css.core
         private void InitializeSettlement()
         {
             // Initialize resources
-            foreach (ResourceType resource in GameManager.Instance.resourceTypes)
+            foreach (Resource resource in GameManager.Instance.resources)
             {
                 resources[resource] = 0f;
                 resourcePrices[resource] = resource.baseValue;
             }
         }
         
-        public void AddResource(ResourceType resource, float amount)
+        public void AddResource(Resource resource, float amount)
         {
             if (resources.ContainsKey(resource))
             {
@@ -47,7 +47,7 @@ namespace css.core
             }
         }
         
-        public void RemoveResource(ResourceType resource, float amount)
+        public void RemoveResource(Resource resource, float amount)
         {
             if (resources.ContainsKey(resource))
             {
@@ -55,12 +55,12 @@ namespace css.core
             }
         }
         
-        public float GetResourceAmount(ResourceType resource)
+        public float GetResourceAmount(Resource resource)
         {
             return resources.ContainsKey(resource) ? resources[resource] : 0f;
         }
         
-        public float GetResourcePrice(ResourceType resource)
+        public float GetResourcePrice(Resource resource)
         {
             return resourcePrices.ContainsKey(resource) ? resourcePrices[resource] : resource.baseValue;
         }

@@ -10,7 +10,7 @@ namespace css.core
         public string name;
         public string occupation;
         public float money;
-        public Dictionary<string, float> inventory;
+        public Dictionary<ResourceType, float> inventory;
         public ScheduleData schedule;
         public Guid settlementId;
     }

@@ -17,7 +17,7 @@ namespace css.core
         public GameObject workAreaPrefab;
         
         [Header("Resource Types")]
-        public List<ResourceType> resourceTypes = new List<ResourceType>();
+        public List<Resource> resources = new List<Resource>();
         
         [Header("Settlements")]
         public List<Settlement> settlements = new List<Settlement>();
@@ -65,7 +65,7 @@ namespace css.core
         private void InitializeGame()
         {
             // Initialize resource types
-            InitializeResourceTypes();
+            InitializeResources();
             
             // Initialize settlements
             InitializeSettlements();
@@ -88,18 +88,11 @@ namespace css.core
             return hoursFloat + minutesFloat;
         }
 
-        private void InitializeResourceTypes()
+        private void InitializeResources()
         {
-            // Initialize basic resources
-            resourceTypes.Add(new ResourceType("Wood", "Raw material from trees"));
-            resourceTypes.Add(new ResourceType("Meat", "Raw meat from animals"));
-            resourceTypes.Add(new ResourceType("Fish", "Raw fish from water bodies"));
-            resourceTypes.Add(new ResourceType("Stone", "Raw stone from quarries"));
-            resourceTypes.Add(new ResourceType("Iron Ore", "Raw iron ore from mines"));
-            resourceTypes.Add(new ResourceType("Coal", "Raw coal from mines"));
-            resourceTypes.Add(new ResourceType("Processed Meat", "Processed meat from butchering"));
-            resourceTypes.Add(new ResourceType("Leather", "Processed leather from tanning"));
-            resourceTypes.Add(new ResourceType("Crops", "Harvested crops from farming"));
+            foreach (ResourceType type in System.Enum.GetValues(typeof(ResourceType))) {
+                resources.Add(ResourceFactory.CreateResource(type));
+            }
         }
         
         private void InitializeSettlements()

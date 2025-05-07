@@ -100,10 +100,10 @@ namespace css.core
             foreach (var item in settlerData.inventory)
             {
                 // Find the matching ResourceType from GameManager's resourceTypes list
-                ResourceType resourceType = GameManager.Instance.resourceTypes.Find(rt => rt.name == item.Key);
-                if (resourceType != null)
+                Resource resource = GameManager.Instance.resources.Find(rt => rt.type == item.Key);
+                if (resource != null)
                 {
-                    npc.AddToInventory(resourceType, item.Value);
+                    npc.AddToInventory(resource);
                 }
                 else
                 {
