@@ -335,7 +335,6 @@ namespace css.core
         
         private void UpdateMovement()
         {
-            // TODO: if is at current work area, don't move. now some NPCs are falling through the floor
             if (currentState == NPCState.Traveling && currentWorkArea != null)
             {
                 // Move towards current work area
@@ -348,6 +347,13 @@ namespace css.core
                     Quaternion targetRotation = Quaternion.LookRotation(direction);
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
                 }
+            }
+            else if (currentState == NPCState.Working && IsAtCurrentWorkArea())
+            {
+                // Stop movement and rotation when at work area
+                Vector3 workAreaPos = currentWorkArea.transform.position;
+                transform.position = workAreaPos;
+                transform.rotation = Quaternion.identity;
             }
         }
     }
