@@ -87,7 +87,6 @@ namespace css.core
             npc.id = settlerData.id;
             npc.npcName = settlerData.name;
             npc.occupation = settlerData.occupation;
-            npc.money = settlerData.money;
             npc.settlementId = settlement.id;
             
             // Set schedule

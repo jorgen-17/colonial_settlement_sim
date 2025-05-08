@@ -25,7 +25,6 @@ namespace css.core
         
         [Header("Inventory")]
         public List<Resource> inventory = new List<Resource>();
-        public float money = 0f;
         
         [Header("Current State")]
         public NPCState currentState = NPCState.Idle;
@@ -222,24 +221,7 @@ namespace css.core
             switch (newState)
             {
                 case NPCState.Working:
-                    // Start work at current work area if not already working
-                    if (currentWorkArea != null && IsAtCurrentWorkArea())
-                    {
-                        List<Resource> inputResources = FindResourcesInInventory(currentWorkArea.requiredInputs);
-                        if (currentWorkArea.StartWork(id, inputResources))
-                        {
-                            RemoveFromInventory(inputResources);
-                        }
-                        else
-                        {
-                            // todo: figure out how to reroute NPC to go find missing resources
-                            // for now I can just reset them to begginng of their work route
-                            currentRouteIndex = 0;
-                            currentWorkArea = workRoute[currentRouteIndex];
-                            requiredTimeAtCurrentArea = currentWorkArea.processingTime;
-                            Debug.LogWarning($"NPC {npcName} failed to start work at {currentWorkArea.areaType}");
-                        }
-                    }
+                    StartWorking();
                     break;
                 case NPCState.Sleeping:
                     // Find and go to home
@@ -249,6 +231,34 @@ namespace css.core
                     // Find activities to do
                     FindIdleActivity();
                     break;
+            }
+        }
+
+        private void StartWorking() 
+        {
+            // Start work at current work area if not already working
+            if (currentWorkArea != null && IsAtCurrentWorkArea() && !currentWorkArea.IsWorkerAssigned(id))
+            {
+                var inputResources = FindResourcesInInventory(currentWorkArea.requiredInputs);
+                if (currentWorkArea.areaType == WorkAreaType.Market)
+                {
+                    // items to sell at market
+                    inputResources = inventory.Where(item => item.amount > 0 && item.baseValue > 0).ToList(); 
+                }
+
+                if (currentWorkArea.StartWork(id, inputResources))
+                {
+                    RemoveFromInventory(inputResources);
+                }
+                else
+                {
+                    // todo: figure out how to reroute NPC to go find missing resources
+                    // for now I can just reset them to begginng of their work route
+                    currentRouteIndex = 0;
+                    currentWorkArea = workRoute[currentRouteIndex];
+                    requiredTimeAtCurrentArea = currentWorkArea.processingTime;
+                    Debug.LogWarning($"NPC {npcName} failed to start work at {currentWorkArea.areaType}");
+                }
             }
         }
 

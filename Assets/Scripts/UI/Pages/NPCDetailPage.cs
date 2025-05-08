@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using css.core;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace css.ui
 {
@@ -346,27 +347,9 @@ namespace css.ui
             // Create new inventory texts
             float yOffset = -60f; // Start below the title
             
-            // Add money display first
-            GameObject moneyObj = new GameObject("MoneyText");
-            moneyObj.transform.SetParent(inventoryPanel.transform);
-            
-            RectTransform moneyRect = moneyObj.AddComponent<RectTransform>();
-            moneyRect.anchorMin = new Vector2(0f, 1f);
-            moneyRect.anchorMax = new Vector2(1f, 1f);
-            moneyRect.sizeDelta = new Vector2(380, 30);
-            moneyRect.anchoredPosition = new Vector2(200, yOffset);
-            
-            TextMeshProUGUI moneyText = moneyObj.AddComponent<TextMeshProUGUI>();
-            moneyText.text = $"Money: ${currentNPC.money:F2}";
-            moneyText.alignment = TextAlignmentOptions.Center;
-            moneyText.fontSize = 28;
-            moneyText.color = Color.white;
-            
-            inventoryTexts.Add(moneyText);
-            yOffset -= 40f;
-            
             // Add all resources in inventory
-            foreach (var item in currentNPC.inventory)
+            var itemsToShow = currentNPC.inventory.Where(item => item.amount > 0).ToList();
+            foreach (var item in itemsToShow)
             {
                 if (item.baseValue > 0)
                 {

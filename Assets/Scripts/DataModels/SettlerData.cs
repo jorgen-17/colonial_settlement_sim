@@ -9,7 +9,6 @@ namespace css.core
         public Guid id;
         public string name;
         public string occupation;
-        public float money;
         public Dictionary<ResourceType, float> inventory;
         public ScheduleData schedule;
         public Guid settlementId;

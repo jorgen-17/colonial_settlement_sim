@@ -76,9 +76,14 @@ namespace css.core
                 return false;
             }
 
-            if (!workerTime.ContainsKey(npcId))
+            if (!IsWorkerAssigned(npcId))
             {
-                this.inputResources = inputResources;
+                foreach (var resource in inputResources)
+                {
+                    // making a copy of the resource so it doesnt disappear when npc deletes it from inventory
+                    var resourceCopy = ResourceFactory.CreateResource(resource.type, resource.amount);
+                    this.inputResources.Add(resourceCopy);
+                }
                 workerTime[npcId] = 0f;
             }
 
@@ -98,10 +103,15 @@ namespace css.core
 
             return inputResources.All(r => requiredInputs.Any(ir => ir.type == r.type && ir.amount >= r.amount));
         }
+
+        public bool IsWorkerAssigned(Guid npcId)
+        {
+            return workerTime.ContainsKey(npcId);
+        }
         
         public void RemoveWorker(Guid npcId)
         {
-            if (workerTime.ContainsKey(npcId))
+            if (IsWorkerAssigned(npcId))
             {
                 workerTime.Remove(npcId);
             }
@@ -109,7 +119,7 @@ namespace css.core
         
         public void Work(Guid npcId, float timeWorked)
         {
-            if (workerTime.ContainsKey(npcId))
+            if (IsWorkerAssigned(npcId))
             {
                 workerTime[npcId] += timeWorked;
             }
@@ -117,18 +127,20 @@ namespace css.core
 
         public List<Resource> FinishWork(Guid npcId)
         {
-            if (workerTime.ContainsKey(npcId) && workerTime[npcId] >= processingTime)
+            if (IsWorkerAssigned(npcId) && GetTimeWorked(npcId) >= processingTime)
             {
                 // Worker has completed the required time
-                workerTime.Remove(npcId);
+                RemoveWorker(npcId);
 
                 if (areaType == WorkAreaType.Market)
                 {
                     float amount = inputResources.Aggregate(0f, (sum, resource) => sum + resource.amount * resource.baseValue);
+                    inputResources.Clear();
                     return new List<Resource> { ResourceFactory.CreateResource(ResourceType.Gold, amount) };
                 }
 
                 // TODO: make work area a store of resources which can replenish over time
+                inputResources.Clear();
                 return outputResources;
             }
             return null;
